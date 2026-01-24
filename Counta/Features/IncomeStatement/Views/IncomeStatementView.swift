@@ -6,27 +6,59 @@ struct IncomeStatementView: View {
     var body: some View {
         NavigationStack {
             List {
-                summarySection
+                if let errorMessage = viewModel.errorMessage {
+                    errorSection(message: errorMessage)
+                }
 
-                incomeSection
-
-                expensesSection
-            }
-            .navigationTitle("损益表")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        viewModel.showDatePicker = true
-                    } label: {
-                        Text(viewModel.selectedPeriod.monthYearDescription)
-                            .foregroundStyle(.primary)
-                        Image(systemName: "chevron.down")
-                    }
+                if viewModel.isLoading && isEmptyState {
+                    loadingSection
+                } else if isEmptyState {
+                    emptySection
+                } else {
+                    summarySection
+                    incomeSection
+                    expensesSection
                 }
             }
+            .navigationTitle("损益表")
             .refreshable {
                 await viewModel.refresh()
             }
+            .task {
+                await viewModel.loadIfNeeded()
+            }
+        }
+    }
+
+    private var isEmptyState: Bool {
+        viewModel.incomeAccounts.isEmpty && viewModel.expenseAccounts.isEmpty
+    }
+
+    private func errorSection(message: String) -> some View {
+        Section {
+            Text(message)
+                .font(.footnote)
+                .foregroundStyle(.red)
+        }
+    }
+
+    private var loadingSection: some View {
+        Section {
+            HStack {
+                Spacer()
+                ProgressView()
+                Spacer()
+            }
+        }
+    }
+
+    private var emptySection: some View {
+        Section {
+            ContentUnavailableView(
+                "暂无损益表数据",
+                systemImage: "chart.bar.doc.horizontal",
+                description: Text("请检查 Fava 连接设置")
+            )
         }
     }
 
@@ -93,8 +125,8 @@ struct IncomeStatementView: View {
     private var incomeSection: some View {
         Section {
             DisclosureGroup(isExpanded: $viewModel.incomeExpanded) {
-                ForEach(viewModel.incomeAccounts) { account in
-                    AccountRowView(account: account)
+                ForEach(viewModel.incomeRows) { row in
+                    AccountRowView(account: row.account, indentLevel: row.indentLevel)
                 }
             } label: {
                 HStack {
@@ -114,8 +146,8 @@ struct IncomeStatementView: View {
     private var expensesSection: some View {
         Section {
             DisclosureGroup(isExpanded: $viewModel.expensesExpanded) {
-                ForEach(viewModel.expenseAccounts) { account in
-                    AccountRowView(account: account)
+                ForEach(viewModel.expenseRows) { row in
+                    AccountRowView(account: row.account, indentLevel: row.indentLevel)
                 }
             } label: {
                 HStack {

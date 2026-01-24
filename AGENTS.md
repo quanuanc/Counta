@@ -1,5 +1,13 @@
 # Project: [Counta]
 
+## Description
+This is a beancount iOS App, design for display beancount ledger in iPhone.
+This App mostly like fava, including 4 tabs: 
+- Income Statement (损益表)
+- Balance Sheet (资产负债表)
+- journal (日记帐)
+- settings (设置)
+
 ## Quick Reference
 - **Platform**: iOS 17+ / macOS 14+
 - **Language**: Swift 6.0
@@ -92,11 +100,3 @@ enum AppError: LocalizedError {
 - Create massive monolithic views
 - Use force unwrapping (`!`) without justification
 - Ignore Swift 6 concurrency warnings
-
-## Planning Workflow
-When starting new features:
-1. Read the PRD from `docs/PRD.md`
-2. Create feature spec in `docs/specs/[feature-name].md`
-3. Use `ultrathink` for architectural decisions
-4. Use Plan Mode (`Shift+Tab`) for implementation strategy
-5. Implement incrementally with tests
