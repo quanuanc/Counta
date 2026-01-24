@@ -14,6 +14,7 @@ struct Account: Identifiable, Hashable, Sendable {
     var type: AccountType
     var currency: String
     var balance: Decimal
+    var balancesByCurrency: [String: Decimal]
     var children: [Account]
 
     init(
@@ -22,6 +23,7 @@ struct Account: Identifiable, Hashable, Sendable {
         type: AccountType,
         currency: String = "CNY",
         balance: Decimal = 0,
+        balancesByCurrency: [String: Decimal] = [:],
         children: [Account] = []
     ) {
         self.id = id
@@ -29,11 +31,25 @@ struct Account: Identifiable, Hashable, Sendable {
         self.type = type
         self.currency = currency
         self.balance = balance
+        self.balancesByCurrency = balancesByCurrency
         self.children = children
     }
 
     var totalBalance: Decimal {
         balance + children.reduce(0) { $0 + $1.totalBalance }
+    }
+
+    var totalBalancesByCurrency: [String: Decimal] {
+        var totals = balancesByCurrency
+        if totals.isEmpty, balance != 0 || children.isEmpty {
+            totals[currency] = balance
+        }
+        for child in children {
+            for (currency, amount) in child.totalBalancesByCurrency {
+                totals[currency, default: 0] += amount
+            }
+        }
+        return totals
     }
 
     var hasChildren: Bool {

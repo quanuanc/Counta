@@ -15,16 +15,33 @@ final class IncomeStatementViewModel: @unchecked Sendable {
 
     private let service = IncomeStatementService()
 
-    var totalIncome: Decimal {
-        incomeAccounts.reduce(0) { $0 + $1.totalBalance }
+    var totalIncomeByCurrency: [String: Decimal] {
+        aggregateBalances(from: incomeAccounts)
     }
 
-    var totalExpenses: Decimal {
-        expenseAccounts.reduce(0) { $0 + $1.totalBalance }
+    var totalExpensesByCurrency: [String: Decimal] {
+        aggregateBalances(from: expenseAccounts)
     }
 
-    var netIncome: Decimal {
-        totalIncome - totalExpenses
+    var netIncomeByCurrency: [String: Decimal] {
+        mergeBalances(totalIncomeByCurrency, totalExpensesByCurrency) { $0 - $1 }
+    }
+
+    var totalIncomeAmounts: [Amount] {
+        amounts(from: totalIncomeByCurrency)
+    }
+
+    var totalExpenseAmounts: [Amount] {
+        amounts(from: totalExpensesByCurrency, sign: -1)
+    }
+
+    var netIncomeAmounts: [Amount] {
+        amounts(from: netIncomeByCurrency)
+    }
+
+    var summaryCurrencies: [String] {
+        let currencies = Set(totalIncomeByCurrency.keys).union(totalExpensesByCurrency.keys)
+        return sortedCurrencies(currencies)
     }
 
     var incomeRows: [IncomeStatementAccountRow] {
@@ -84,9 +101,12 @@ final class IncomeStatementViewModel: @unchecked Sendable {
         type: AccountType,
         preferredCurrency: String?
     ) -> Account {
-        let selection = selectBalance(from: node.balance?.values ?? [:], preferredCurrency: preferredCurrency)
+        let rawBalances = node.balance?.values ?? [:]
+        let normalizedBalances = normalizeBalances(rawBalances)
+        let selection = selectBalance(from: rawBalances, preferredCurrency: preferredCurrency)
+        let nextPreferredCurrency = selection?.currency ?? preferredCurrency
         let children = node.children.map { child in
-            makeAccount(from: child, type: type, preferredCurrency: selection?.currency ?? preferredCurrency)
+            makeAccount(from: child, type: type, preferredCurrency: nextPreferredCurrency)
         }
         let currency = selection?.currency ?? children.first?.currency ?? preferredCurrency ?? "CNY"
         let balance = selection.map { abs($0.amount) } ?? 0
@@ -96,6 +116,7 @@ final class IncomeStatementViewModel: @unchecked Sendable {
             type: type,
             currency: currency,
             balance: balance,
+            balancesByCurrency: normalizedBalances,
             children: children
         )
     }
@@ -119,18 +140,105 @@ final class IncomeStatementViewModel: @unchecked Sendable {
         return BalanceSelection(currency: first.key, amount: first.value)
     }
 
+    private func normalizeBalances(_ balances: [String: Decimal]) -> [String: Decimal] {
+        balances.mapValues { abs($0) }
+    }
+
+    private func aggregateBalances(from accounts: [Account]) -> [String: Decimal] {
+        var totals: [String: Decimal] = [:]
+        for account in accounts {
+            for (currency, amount) in account.totalBalancesByCurrency {
+                totals[currency, default: 0] += amount
+            }
+        }
+        return totals
+    }
+
+    private func mergeBalances(
+        _ left: [String: Decimal],
+        _ right: [String: Decimal],
+        combine: (Decimal, Decimal) -> Decimal
+    ) -> [String: Decimal] {
+        var merged = left
+        for (currency, amount) in right {
+            let existing = merged[currency] ?? 0
+            merged[currency] = combine(existing, amount)
+        }
+        return merged
+    }
+
+    private var primaryCurrency: String {
+        if let currency = selectBalance(from: totalIncomeByCurrency, preferredCurrency: nil)?.currency {
+            return currency
+        }
+        if let currency = selectBalance(from: totalExpensesByCurrency, preferredCurrency: nil)?.currency {
+            return currency
+        }
+        return "CNY"
+    }
+
+    private func sortedCurrencies(_ currencies: Set<String>) -> [String] {
+        guard !currencies.isEmpty else { return [] }
+        let preferred = primaryCurrency
+        return currencies.sorted {
+            currencySortKey($0, preferred: preferred) < currencySortKey($1, preferred: preferred)
+        }
+    }
+
+    private func currencySortKey(_ currency: String, preferred: String) -> (Int, String) {
+        if currency == preferred {
+            return (0, currency)
+        }
+        switch currency {
+        case "CNY":
+            return (1, currency)
+        case "USD":
+            return (2, currency)
+        case "EUR":
+            return (3, currency)
+        case "JPY":
+            return (4, currency)
+        case "GBP":
+            return (5, currency)
+        default:
+            return (6, currency)
+        }
+    }
+
+    private func amounts(
+        from balances: [String: Decimal],
+        sign: Decimal = 1
+    ) -> [Amount] {
+        let currencies = sortedCurrencies(Set(balances.keys))
+        if currencies.isEmpty {
+            return [Amount(number: 0, currency: primaryCurrency)]
+        }
+        return currencies.map { currency in
+            Amount(number: (balances[currency] ?? 0) * sign, currency: currency)
+        }
+    }
+
     private func flattenAccounts(
         _ accounts: [Account],
         indentLevel: Int = 0
     ) -> [IncomeStatementAccountRow] {
         var rows: [IncomeStatementAccountRow] = []
         for account in accounts {
-            rows.append(IncomeStatementAccountRow(account: account, indentLevel: indentLevel))
+            rows.append(IncomeStatementAccountRow(
+                account: account,
+                indentLevel: indentLevel,
+                displayAmounts: displayAmounts(for: account)
+            ))
             if account.hasChildren {
                 rows.append(contentsOf: flattenAccounts(account.children, indentLevel: indentLevel + 1))
             }
         }
         return rows
+    }
+
+    private func displayAmounts(for account: Account) -> [Amount] {
+        let sign: Decimal = account.type == .expenses ? -1 : 1
+        return amounts(from: account.totalBalancesByCurrency, sign: sign)
     }
 
     private static let dateFormatter: DateFormatter = {
@@ -145,6 +253,7 @@ final class IncomeStatementViewModel: @unchecked Sendable {
 struct IncomeStatementAccountRow: Identifiable, Sendable {
     let account: Account
     let indentLevel: Int
+    let displayAmounts: [Amount]
 
     var id: String {
         account.id

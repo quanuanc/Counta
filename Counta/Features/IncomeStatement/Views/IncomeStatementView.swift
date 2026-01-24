@@ -34,6 +34,10 @@ struct IncomeStatementView: View {
         viewModel.incomeAccounts.isEmpty && viewModel.expenseAccounts.isEmpty
     }
 
+    private var showCurrencyCode: Bool {
+        viewModel.summaryCurrencies.count > 1
+    }
+
     private func errorSection(message: String) -> some View {
         Section {
             Text(message)
@@ -70,9 +74,10 @@ struct IncomeStatementView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     Spacer()
-                    AmountText(
-                        amount: Amount(number: viewModel.netIncome),
-                        font: .title2.bold()
+                    AmountListView(
+                        amounts: viewModel.netIncomeAmounts,
+                        font: .title2.bold(),
+                        showCurrencyCode: showCurrencyCode
                     )
                 }
 
@@ -81,9 +86,11 @@ struct IncomeStatementView: View {
                         Text("收入")
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                        AmountText(
-                            amount: Amount(number: viewModel.totalIncome),
-                            font: .callout
+                        AmountListView(
+                            amounts: viewModel.totalIncomeAmounts,
+                            font: .callout,
+                            showCurrencyCode: showCurrencyCode,
+                            alignment: .leading
                         )
                     }
 
@@ -93,32 +100,32 @@ struct IncomeStatementView: View {
                         Text("支出")
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                        AmountText(
-                            amount: Amount(number: -viewModel.totalExpenses),
-                            font: .callout
+                        AmountListView(
+                            amounts: viewModel.totalExpenseAmounts,
+                            font: .callout,
+                            showCurrencyCode: showCurrencyCode,
+                            alignment: .trailing
                         )
                     }
                 }
 
-                GeometryReader { geometry in
-                    HStack(spacing: 4) {
-                        let total = viewModel.totalIncome + viewModel.totalExpenses
-                        let incomeWidth = total > 0
-                            ? geometry.size.width * CGFloat(truncating: (viewModel.totalIncome / total) as NSDecimalNumber)
-                            : geometry.size.width * 0.5
-
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(.green)
-                            .frame(width: max(incomeWidth, 4))
-
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(.red)
-                            .frame(width: max(geometry.size.width - incomeWidth - 4, 4))
-                    }
-                }
-                .frame(height: 8)
+                summaryBarSection
             }
             .padding(.vertical, 8)
+        }
+    }
+
+    private var summaryBarSection: some View {
+        let currencies = viewModel.summaryCurrencies
+        return VStack(spacing: 6) {
+            ForEach(currencies, id: \.self) { currency in
+                SummaryBarRow(
+                    currency: currency,
+                    income: viewModel.totalIncomeByCurrency[currency] ?? 0,
+                    expenses: viewModel.totalExpensesByCurrency[currency] ?? 0,
+                    showCurrencyLabel: currencies.count > 1
+                )
+            }
         }
     }
 
@@ -126,7 +133,12 @@ struct IncomeStatementView: View {
         Section {
             DisclosureGroup(isExpanded: $viewModel.incomeExpanded) {
                 ForEach(viewModel.incomeRows) { row in
-                    AccountRowView(account: row.account, indentLevel: row.indentLevel)
+                    AccountRowView(
+                        account: row.account,
+                        amounts: row.displayAmounts,
+                        showCurrencyCode: showCurrencyCode,
+                        indentLevel: row.indentLevel
+                    )
                 }
             } label: {
                 HStack {
@@ -134,9 +146,10 @@ struct IncomeStatementView: View {
                     Text("收入 Income")
                         .font(.headline)
                     Spacer()
-                    AmountText(
-                        amount: Amount(number: viewModel.totalIncome),
-                        font: .callout.bold()
+                    AmountListView(
+                        amounts: viewModel.totalIncomeAmounts,
+                        font: .callout.bold(),
+                        showCurrencyCode: showCurrencyCode
                     )
                 }
             }
@@ -147,7 +160,12 @@ struct IncomeStatementView: View {
         Section {
             DisclosureGroup(isExpanded: $viewModel.expensesExpanded) {
                 ForEach(viewModel.expenseRows) { row in
-                    AccountRowView(account: row.account, indentLevel: row.indentLevel)
+                    AccountRowView(
+                        account: row.account,
+                        amounts: row.displayAmounts,
+                        showCurrencyCode: showCurrencyCode,
+                        indentLevel: row.indentLevel
+                    )
                 }
             } label: {
                 HStack {
@@ -155,13 +173,51 @@ struct IncomeStatementView: View {
                     Text("支出 Expenses")
                         .font(.headline)
                     Spacer()
-                    AmountText(
-                        amount: Amount(number: -viewModel.totalExpenses),
-                        font: .callout.bold()
+                    AmountListView(
+                        amounts: viewModel.totalExpenseAmounts,
+                        font: .callout.bold(),
+                        showCurrencyCode: showCurrencyCode
                     )
                 }
             }
         }
+    }
+}
+
+private struct SummaryBarRow: View {
+    let currency: String
+    let income: Decimal
+    let expenses: Decimal
+    let showCurrencyLabel: Bool
+
+    var body: some View {
+        HStack(spacing: 8) {
+            if showCurrencyLabel {
+                Text(currency)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .frame(width: 44, alignment: .leading)
+            }
+
+            GeometryReader { geometry in
+                HStack(spacing: 4) {
+                    let total = income + expenses
+                    let incomeWidth = total > 0
+                        ? geometry.size.width * CGFloat(truncating: (income / total) as NSDecimalNumber)
+                        : geometry.size.width * 0.5
+
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(.green)
+                        .frame(width: max(incomeWidth, 4))
+
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(.red)
+                        .frame(width: max(geometry.size.width - incomeWidth - 4, 4))
+                }
+            }
+            .frame(height: 8)
+        }
+        .frame(height: 8)
     }
 }
 

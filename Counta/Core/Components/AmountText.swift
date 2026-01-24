@@ -4,6 +4,7 @@ struct AmountText: View {
     let amount: Amount
     var showSign: Bool = false
     var font: Font = .body
+    var showCurrencyCode: Bool = false
 
     private var textColor: Color {
         if amount.isPositive {
@@ -15,20 +16,27 @@ struct AmountText: View {
         }
     }
 
-    private var currencySymbol: String {
+    private var currencySymbol: String? {
         switch amount.currency {
         case "CNY": return "¥"
         case "USD": return "$"
         case "EUR": return "€"
         case "JPY": return "¥"
         case "GBP": return "£"
-        default: return amount.currency + " "
+        default: return nil
         }
+    }
+
+    private var currencyPrefix: String {
+        if let currencySymbol {
+            return currencySymbol + " "
+        }
+        return amount.currency + " "
     }
 
     private var displayText: String {
         let sign = showSign && amount.isPositive ? "+" : ""
-        return sign + currencySymbol + amount.number.formatted
+        return sign + currencyPrefix + amount.number.formatted
     }
 
     var body: some View {

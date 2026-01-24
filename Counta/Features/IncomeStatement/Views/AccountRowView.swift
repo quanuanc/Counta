@@ -2,12 +2,12 @@ import SwiftUI
 
 struct AccountRowView: View {
     let account: Account
+    let amounts: [Amount]
+    var showCurrencyCode: Bool = false
     var indentLevel: Int = 0
 
-    private var displayAmount: Amount {
-        let amount = account.totalBalance
-        let signedAmount = account.type == .expenses ? -amount : amount
-        return Amount(number: signedAmount, currency: account.currency)
+    private var shouldShowCurrencyCode: Bool {
+        showCurrencyCode || amounts.count > 1
     }
 
     var body: some View {
@@ -15,9 +15,10 @@ struct AccountRowView: View {
             Text(account.name)
                 .padding(.leading, CGFloat(indentLevel) * 16)
             Spacer()
-            AmountText(
-                amount: displayAmount,
-                font: .callout
+            AmountListView(
+                amounts: amounts,
+                font: .callout,
+                showCurrencyCode: shouldShowCurrencyCode
             )
         }
     }
@@ -30,6 +31,6 @@ struct AccountRowView: View {
             name: "餐饮",
             type: .expenses,
             balance: 2500
-        ))
+        ), amounts: [Amount(number: -2500, currency: "CNY")], showCurrencyCode: true)
     }
 }
