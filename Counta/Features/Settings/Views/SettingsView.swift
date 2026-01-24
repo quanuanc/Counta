@@ -2,53 +2,35 @@ import SwiftUI
 
 struct SettingsView: View {
     @State private var viewModel = SettingsViewModel()
+    @AppStorage(AppStorageKeys.favaApiURL) private var storedFavaApiURL = ""
 
     var body: some View {
         NavigationStack {
-            List {
-                dataSourceSection
-
+            Form {
+                favaConnectionSection
                 displaySection
-
                 aboutSection
             }
             .navigationTitle("设置")
         }
     }
 
-    private var dataSourceSection: some View {
-        Section("数据源") {
+    private var favaConnectionSection: some View {
+        Section("连接") {
             NavigationLink {
-                Text("文件选择器 - 待实现")
+                WelcomeView(context: .settings)
             } label: {
                 HStack {
-                    Image(systemName: "doc.text")
+                    Image(systemName: "dot.radiowaves.left.and.right")
                         .foregroundStyle(.blue)
                         .frame(width: 28)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Beancount 文件")
-                        if let path = viewModel.beancountFilePath {
-                            Text(path)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(1)
-                        } else {
-                            Text("未选择")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+                        Text("Fava 服务器")
+                        Text(storedFavaApiURL.isEmpty ? "未设置" : storedFavaApiURL)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
                     }
-                }
-            }
-
-            NavigationLink {
-                Text("同步设置 - 待实现")
-            } label: {
-                HStack {
-                    Image(systemName: "arrow.triangle.2.circlepath")
-                        .foregroundStyle(.blue)
-                        .frame(width: 28)
-                    Text("同步设置")
                 }
             }
         }

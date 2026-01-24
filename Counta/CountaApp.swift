@@ -4,7 +4,7 @@ import SwiftUI
 struct CountaApp: App {
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            RootView()
         }
     }
 }
