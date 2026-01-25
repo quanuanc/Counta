@@ -257,5 +257,7 @@ struct WelcomeView: View {
 }
 
 #Preview {
-    WelcomeView()
+    PreviewContainer {
+        WelcomeView()
+    }
 }

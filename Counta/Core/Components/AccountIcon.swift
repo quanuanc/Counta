@@ -51,11 +51,13 @@ extension AccountIcon {
 }
 
 #Preview {
-    VStack(spacing: 20) {
-        ForEach(AccountType.allCases, id: \.self) { type in
-            HStack {
-                AccountIcon(accountType: type)
-                Text(type.rawValue)
+    PreviewContainer {
+        VStack(spacing: 20) {
+            ForEach(AccountType.allCases, id: \.self) { type in
+                HStack {
+                    AccountIcon(accountType: type)
+                    Text(type.rawValue)
+                }
             }
         }
     }

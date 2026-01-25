@@ -231,5 +231,7 @@ private struct SummaryBarRow: View {
 }
 
 #Preview {
-    IncomeStatementView()
+    PreviewContainer {
+        IncomeStatementView()
+    }
 }

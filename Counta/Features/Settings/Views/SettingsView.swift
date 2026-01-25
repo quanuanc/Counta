@@ -128,5 +128,7 @@ struct AboutView: View {
 }
 
 #Preview {
-    SettingsView()
+    PreviewContainer {
+        SettingsView()
+    }
 }

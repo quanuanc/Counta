@@ -128,5 +128,7 @@ struct BalanceSheetView: View {
 }
 
 #Preview {
-    BalanceSheetView()
+    PreviewContainer {
+        BalanceSheetView()
+    }
 }

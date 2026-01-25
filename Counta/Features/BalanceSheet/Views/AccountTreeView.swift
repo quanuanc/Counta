@@ -31,16 +31,18 @@ struct AccountTreeRow: View {
 }
 
 #Preview {
-    List {
-        AccountTreeRow(account: Account(
-            id: "Assets:Bank",
-            name: "银行账户",
-            type: .assets,
-            balance: 0,
-            children: [
-                Account(id: "Assets:Bank:CCB", name: "建设银行", type: .assets, balance: 100000),
-                Account(id: "Assets:Bank:CMB", name: "招商银行", type: .assets, balance: 80000),
-            ]
-        ))
+    PreviewContainer {
+        List {
+            AccountTreeRow(account: Account(
+                id: "Assets:Bank",
+                name: "银行账户",
+                type: .assets,
+                balance: 0,
+                children: [
+                    Account(id: "Assets:Bank:CCB", name: "建设银行", type: .assets, balance: 100000),
+                    Account(id: "Assets:Bank:CMB", name: "招商银行", type: .assets, balance: 80000),
+                ]
+            ))
+        }
     }
 }

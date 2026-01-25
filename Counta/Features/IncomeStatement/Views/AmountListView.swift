@@ -23,12 +23,14 @@ struct AmountListView: View {
 }
 
 #Preview {
-    AmountListView(
-        amounts: [
-            Amount(number: 1200, currency: "USD"),
-            Amount(number: -530, currency: "EUR"),
-        ],
-        font: .callout,
-        showCurrencyCode: true
-    )
+    PreviewContainer {
+        AmountListView(
+            amounts: [
+                Amount(number: 1200, currency: "USD"),
+                Amount(number: -530, currency: "EUR"),
+            ],
+            font: .callout,
+            showCurrencyCode: true
+        )
+    }
 }

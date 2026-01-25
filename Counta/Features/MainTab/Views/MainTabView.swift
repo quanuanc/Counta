@@ -58,5 +58,7 @@ struct MainTabView: View {
 }
 
 #Preview {
-    MainTabView()
+    PreviewContainer {
+        MainTabView()
+    }
 }

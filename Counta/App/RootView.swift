@@ -17,5 +17,7 @@ struct RootView: View {
 }
 
 #Preview {
-    RootView()
+    PreviewContainer {
+        RootView()
+    }
 }

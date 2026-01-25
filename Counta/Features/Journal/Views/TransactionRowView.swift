@@ -84,24 +84,26 @@ struct TransactionRowView: View {
 }
 
 #Preview {
-    List {
-        TransactionRowView(transaction: Transaction(
-            date: Date(),
-            payee: "午餐",
-            narration: "和同事吃饭",
-            postings: [
-                Posting(account: "Expenses:Food:Dining", amount: Amount(number: 35)),
-                Posting(account: "Assets:Alipay", amount: Amount(number: -35)),
-            ]
-        ))
+    PreviewContainer {
+        List {
+            TransactionRowView(transaction: Transaction(
+                date: Date(),
+                payee: "午餐",
+                narration: "和同事吃饭",
+                postings: [
+                    Posting(account: "Expenses:Food:Dining", amount: Amount(number: 35)),
+                    Posting(account: "Assets:Alipay", amount: Amount(number: -35)),
+                ]
+            ))
 
-        TransactionRowView(transaction: Transaction(
-            date: Date(),
-            narration: "工资",
-            postings: [
-                Posting(account: "Assets:Bank:CMB", amount: Amount(number: 20000)),
-                Posting(account: "Income:Salary", amount: Amount(number: -20000)),
-            ]
-        ))
+            TransactionRowView(transaction: Transaction(
+                date: Date(),
+                narration: "工资",
+                postings: [
+                    Posting(account: "Assets:Bank:CMB", amount: Amount(number: 20000)),
+                    Posting(account: "Income:Salary", amount: Amount(number: -20000)),
+                ]
+            ))
+        }
     }
 }

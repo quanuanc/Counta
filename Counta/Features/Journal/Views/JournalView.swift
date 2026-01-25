@@ -46,5 +46,7 @@ struct JournalView: View {
 }
 
 #Preview {
-    JournalView()
+    PreviewContainer {
+        JournalView()
+    }
 }

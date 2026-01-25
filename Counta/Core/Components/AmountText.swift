@@ -59,9 +59,11 @@ struct AmountText: View {
 }
 
 #Preview {
-    VStack(spacing: 20) {
-        AmountText(amount: Amount(number: 1234.56))
-        AmountText(amount: Amount(number: -567.89))
-        AmountText(amount: Amount(number: 1000, currency: "USD"), showSign: true)
+    PreviewContainer {
+        VStack(spacing: 20) {
+            AmountText(amount: Amount(number: 1234.56))
+            AmountText(amount: Amount(number: -567.89))
+            AmountText(amount: Amount(number: 1000, currency: "USD"), showSign: true)
+        }
     }
 }

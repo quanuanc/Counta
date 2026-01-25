@@ -1,7 +1,3 @@
-request: `get /income_statement`
-
-response example:
-```json
 {
   "data": {
     "charts": [
@@ -679,4 +675,3 @@ response example:
   },
   "mtime": "0"
 }
-```

@@ -64,12 +64,14 @@ struct IncomeStatementAccountTreeRow: View {
 }
 
 #Preview {
-    List {
-        AccountRowView(account: Account(
-            id: "Expenses:Food:Dining",
-            name: "餐饮",
-            type: .expenses,
-            balance: 2500
-        ), amounts: [Amount(number: -2500, currency: "CNY")], showCurrencyCode: true)
+    PreviewContainer {
+        List {
+            AccountRowView(account: Account(
+                id: "Expenses:Food:Dining",
+                name: "餐饮",
+                type: .expenses,
+                balance: 2500
+            ), amounts: [Amount(number: -2500, currency: "CNY")], showCurrencyCode: true)
+        }
     }
 }

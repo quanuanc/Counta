@@ -25,7 +25,9 @@ struct CurrencySettingsView: View {
 }
 
 #Preview {
-    NavigationStack {
-        CurrencySettingsView()
+    PreviewContainer {
+        NavigationStack {
+            CurrencySettingsView()
+        }
     }
 }
