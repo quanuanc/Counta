@@ -40,18 +40,32 @@ struct IncomeStatementAccountTreeRow: View {
                     )
                 }
             } label: {
+                NavigationLink {
+                    AccountDetailView(
+                        account: account,
+                        balanceAmounts: viewModel.displayAmounts(for: account)
+                    )
+                } label: {
+                    AccountRowView(
+                        account: account,
+                        amounts: viewModel.displayAmounts(for: account),
+                        showCurrencyCode: showCurrencyCode
+                    )
+                }
+            }
+        } else {
+            NavigationLink {
+                AccountDetailView(
+                    account: account,
+                    balanceAmounts: viewModel.displayAmounts(for: account)
+                )
+            } label: {
                 AccountRowView(
                     account: account,
                     amounts: viewModel.displayAmounts(for: account),
                     showCurrencyCode: showCurrencyCode
                 )
             }
-        } else {
-            AccountRowView(
-                account: account,
-                amounts: viewModel.displayAmounts(for: account),
-                showCurrencyCode: showCurrencyCode
-            )
         }
     }
 

@@ -142,9 +142,8 @@ struct IncomeStatementView: View {
                 }
             } label: {
                 HStack {
-                    AccountIcon(accountType: .income)
-                    Text("收入 Income")
-                        .font(.headline)
+                    Text("Income")
+                        .font(.body)
                     Spacer()
                     AmountListView(
                         amounts: viewModel.totalIncomeAmounts,
@@ -153,6 +152,8 @@ struct IncomeStatementView: View {
                     )
                 }
             }
+        } header: {
+            sectionHeader(title: "收入", accountType: .income)
         }
     }
 
@@ -168,9 +169,8 @@ struct IncomeStatementView: View {
                 }
             } label: {
                 HStack {
-                    AccountIcon(accountType: .expenses)
-                    Text("支出 Expenses")
-                        .font(.headline)
+                    Text("Expenses")
+                        .font(.body)
                     Spacer()
                     AmountListView(
                         amounts: viewModel.totalExpenseAmounts,
@@ -179,7 +179,19 @@ struct IncomeStatementView: View {
                     )
                 }
             }
+        } header: {
+            sectionHeader(title: "支出", accountType: .expenses)
         }
+    }
+
+    private func sectionHeader(title: String, accountType: AccountType) -> some View {
+        HStack(spacing: 8) {
+            AccountIcon(accountType: accountType, size: 18)
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+        }
+        .textCase(nil)
     }
 }
 
