@@ -1,96 +1,116 @@
 import Foundation
 
-struct TransactionGroup: Sendable {
+struct JournalEntryGroup: Sendable, Identifiable {
     let date: Date
-    let transactions: [Transaction]
+    var entries: [JournalEntry]
+
+    var id: Date { date }
 }
 
 @Observable
 final class JournalViewModel: @unchecked Sendable {
-    var showAddTransaction = false
-    private var allTransactions: [Transaction] = []
-    private(set) var groupedTransactions: [TransactionGroup] = []
+    var isLoading = false
+    var errorMessage: String?
+    private(set) var entries: [JournalEntry] = []
+    private(set) var groupedEntries: [JournalEntryGroup] = []
+    private(set) var currentPage = 1
+    private(set) var totalPages = 1
 
-    init() {
-        loadMockData()
-        groupTransactions()
+    private var hasLoaded = false
+    private var allEntries: [JournalEntry] = []
+    private var searchQuery = ""
+    private let order: JournalOrder = .desc
+    private let service = JournalService()
+
+    var hasMorePages: Bool {
+        currentPage < totalPages
+    }
+
+    func loadIfNeeded() async {
+        guard !hasLoaded else { return }
+        await refresh()
     }
 
     func refresh() async {
-        try? await Task.sleep(for: .milliseconds(500))
-        loadMockData()
-        groupTransactions()
+        guard !isLoading else { return }
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+
+        let baseURL = UserDefaults.standard.string(forKey: AppStorageKeys.favaApiURL) ?? ""
+        do {
+            let data = try await service.fetchJournal(baseURL: baseURL, page: 1, order: order)
+            apply(data, appending: false)
+            hasLoaded = true
+        } catch {
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? "无法加载日记账数据"
+        }
+    }
+
+    func loadNextPage() async {
+        guard !isLoading, hasMorePages else { return }
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+
+        let baseURL = UserDefaults.standard.string(forKey: AppStorageKeys.favaApiURL) ?? ""
+        let nextPage = currentPage + 1
+        do {
+            let data = try await service.fetchJournal(baseURL: baseURL, page: nextPage, order: order)
+            apply(data, appending: true)
+        } catch {
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? "无法加载更多日记账数据"
+        }
     }
 
     func search(query: String) {
-        if query.isEmpty {
-            groupTransactions()
+        searchQuery = query
+        applyFilter()
+    }
+
+    private func apply(_ data: JournalData, appending: Bool) {
+        let parsedEntries = JournalHTMLParser.parseEntries(from: data.journal)
+        if appending {
+            allEntries.append(contentsOf: parsedEntries)
+        } else {
+            allEntries = parsedEntries
+        }
+        currentPage = data.page
+        totalPages = data.totalPages
+        applyFilter()
+    }
+
+    private func applyFilter() {
+        let query = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else {
+            entries = allEntries
+            groupedEntries = makeGroups(from: allEntries)
             return
         }
 
-        let filtered = allTransactions.filter { transaction in
-            transaction.narration.localizedCaseInsensitiveContains(query)
-            || (transaction.payee?.localizedCaseInsensitiveContains(query) ?? false)
-            || transaction.postings.contains { $0.account.localizedCaseInsensitiveContains(query) }
+        let lowercased = query.localizedLowercase
+        entries = allEntries.filter { entry in
+            let payee = entry.payee?.localizedLowercase ?? ""
+            return entry.narration.localizedLowercase.contains(lowercased)
+                || payee.contains(lowercased)
+        }
+        groupedEntries = makeGroups(from: entries)
+    }
+
+    private func makeGroups(from entries: [JournalEntry]) -> [JournalEntryGroup] {
+        var groups: [JournalEntryGroup] = []
+        var indexByDate: [Date: Int] = [:]
+
+        for entry in entries {
+            let day = entry.date.startOfDay
+            if let index = indexByDate[day] {
+                groups[index].entries.append(entry)
+            } else {
+                indexByDate[day] = groups.count
+                groups.append(JournalEntryGroup(date: day, entries: [entry]))
+            }
         }
 
-        groupTransactions(from: filtered)
-    }
-
-    func delete(_ transaction: Transaction) {
-        allTransactions.removeAll { $0.id == transaction.id }
-        groupTransactions()
-    }
-
-    private func groupTransactions(from transactions: [Transaction]? = nil) {
-        let source = transactions ?? allTransactions
-        let grouped = Dictionary(grouping: source) { $0.date.startOfDay }
-        groupedTransactions = grouped
-            .map { TransactionGroup(date: $0.key, transactions: $0.value) }
-            .sorted { $0.date > $1.date }
-    }
-
-    private func loadMockData() {
-        let calendar = Calendar.current
-        let today = Date()
-        let yesterday = calendar.date(byAdding: .day, value: -1, to: today)!
-
-        allTransactions = [
-            Transaction(
-                date: calendar.date(bySettingHour: 12, minute: 30, second: 0, of: today)!,
-                payee: "午餐",
-                narration: "和同事吃饭",
-                postings: [
-                    Posting(account: "Expenses:Food:Dining", amount: Amount(number: 35)),
-                    Posting(account: "Assets:Alipay", amount: Amount(number: -35)),
-                ]
-            ),
-            Transaction(
-                date: calendar.date(bySettingHour: 8, minute: 15, second: 0, of: today)!,
-                payee: "地铁",
-                narration: "通勤",
-                postings: [
-                    Posting(account: "Expenses:Transport", amount: Amount(number: 6)),
-                    Posting(account: "Assets:TransportCard", amount: Amount(number: -6)),
-                ]
-            ),
-            Transaction(
-                date: calendar.date(bySettingHour: 10, minute: 0, second: 0, of: yesterday)!,
-                narration: "工资",
-                postings: [
-                    Posting(account: "Assets:Bank:CMB", amount: Amount(number: 20000)),
-                    Posting(account: "Income:Salary", amount: Amount(number: -20000)),
-                ]
-            ),
-            Transaction(
-                date: calendar.date(bySettingHour: 19, minute: 30, second: 0, of: yesterday)!,
-                payee: "超市购物",
-                narration: "日用品采购",
-                postings: [
-                    Posting(account: "Expenses:Shopping", amount: Amount(number: 256.5)),
-                    Posting(account: "Assets:WeChat", amount: Amount(number: -256.5)),
-                ]
-            ),
-        ]
+        return groups
     }
 }

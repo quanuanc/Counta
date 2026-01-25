@@ -26,6 +26,13 @@ enum PreviewFavaAPI {
         return try Data(contentsOf: url)
     }
 
+    fileprivate static func loadJournalData() throws -> Data {
+        guard let url = previewJSONURL(path: "docs/journal/response.json") else {
+            throw PreviewFavaAPIError.missingMockFile
+        }
+        return try Data(contentsOf: url)
+    }
+
     private static func previewJSONURL(path: String) -> URL? {
         let fileURL = URL(fileURLWithPath: #filePath)
         let repoRoot = fileURL
@@ -49,7 +56,9 @@ final class PreviewFavaURLProtocol: URLProtocol {
         guard let url = request.url else { return false }
         guard URLProtocol.property(forKey: handledKey, in: request) == nil else { return false }
         guard url.host == "preview.fava.local" else { return false }
-        return url.path.hasSuffix("/income_statement") || url.path.hasSuffix("/balance_sheet")
+        return url.path.hasSuffix("/income_statement")
+            || url.path.hasSuffix("/balance_sheet")
+            || url.path.hasSuffix("/journal_page")
     }
 
     override class func canonicalRequest(for request: URLRequest) -> URLRequest {
@@ -68,6 +77,8 @@ final class PreviewFavaURLProtocol: URLProtocol {
             let data: Data
             if url.path.hasSuffix("/balance_sheet") {
                 data = try PreviewFavaAPI.loadBalanceSheetData()
+            } else if url.path.hasSuffix("/journal_page") {
+                data = try PreviewFavaAPI.loadJournalData()
             } else {
                 data = try PreviewFavaAPI.loadIncomeStatementData()
             }

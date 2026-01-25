@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		060500002F2000010054B502 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 060500012F2000010054B502 /* SwiftSoup */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		0604FFFC2F1CF0AB0054B502 /* Counta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Counta.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				060500002F2000010054B502 /* SwiftSoup in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = Counta;
 			packageProductDependencies = (
+				060500012F2000010054B502 /* SwiftSoup */,
 			);
 			productName = Counta;
 			productReference = 0604FFFC2F1CF0AB0054B502 /* Counta.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 0604FFF32F1CF0AB0054B502;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				060500022F2000010054B502 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0604FFFD2F1CF0AB0054B502 /* Products */;
 			projectDirPath = "";
@@ -332,6 +341,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		060500022F2000010054B502 /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scinfu/SwiftSoup";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		060500012F2000010054B502 /* SwiftSoup */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 060500022F2000010054B502 /* XCRemoteSwiftPackageReference "SwiftSoup" */;
+			productName = SwiftSoup;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0604FFF42F1CF0AB0054B502 /* Project object */;
 }

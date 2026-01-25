@@ -7,40 +7,109 @@ struct JournalView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(viewModel.groupedTransactions, id: \.date) { group in
-                    Section {
-                        ForEach(group.transactions) { transaction in
-                            TransactionRowView(transaction: transaction)
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    Button(role: .destructive) {
-                                        viewModel.delete(transaction)
-                                    } label: {
-                                        Label("删除", systemImage: "trash")
-                                    }
-                                }
-                        }
-                    } header: {
-                        Text("\(group.date.relativeDescription) - \(group.date, format: .dateTime.month().day())")
+                if let errorMessage = viewModel.errorMessage {
+                    errorSection(message: errorMessage)
+                }
+
+                if viewModel.isLoading && viewModel.groupedEntries.isEmpty {
+                    loadingSection
+                } else if viewModel.groupedEntries.isEmpty {
+                    emptySection
+                } else {
+                    entriesSection
+                    if viewModel.hasMorePages {
+                        loadMoreSection
                     }
                 }
             }
             .navigationTitle("日记账")
             .searchable(text: $searchText, prompt: "搜索交易")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        viewModel.showAddTransaction = true
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                }
-            }
             .refreshable {
                 await viewModel.refresh()
             }
-            .onChange(of: searchText) { _, newValue in
-                viewModel.search(query: newValue)
+            .task {
+                await viewModel.loadIfNeeded()
             }
+            .onSubmit(of: .search) {
+                viewModel.search(query: searchText)
+            }
+            .onChange(of: searchText) { _, newValue in
+                if newValue.isEmpty {
+                    viewModel.search(query: "")
+                }
+            }
+            .navigationDestination(for: JournalEntry.self) { entry in
+                JournalEntryDetailView(entry: entry)
+            }
+        }
+    }
+
+    private func errorSection(message: String) -> some View {
+        Section {
+            Text(message)
+                .font(.footnote)
+                .foregroundStyle(.red)
+        }
+    }
+
+    private var loadingSection: some View {
+        Section {
+            HStack {
+                Spacer()
+                ProgressView()
+                Spacer()
+            }
+        }
+    }
+
+    private var emptySection: some View {
+        Section {
+            ContentUnavailableView(
+                "暂无日记账数据",
+                systemImage: "book",
+                description: Text("请检查 Fava 连接设置")
+            )
+        }
+    }
+
+    private var entriesSection: some View {
+        ForEach(viewModel.groupedEntries) { group in
+            Section {
+                ForEach(group.entries) { entry in
+                    NavigationLink(value: entry) {
+                        JournalEntryRowView(entry: entry)
+                    }
+                }
+            } header: {
+                Text(sectionTitle(for: group.date))
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .textCase(nil)
+            }
+        }
+    }
+
+    private var loadMoreSection: some View {
+        Section {
+            Button {
+                Task {
+                    await viewModel.loadNextPage()
+                }
+            } label: {
+                HStack {
+                    Spacer()
+                    if viewModel.isLoading {
+                        ProgressView()
+                    } else {
+                        Text("加载更多")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                }
+            }
+            .buttonStyle(.plain)
+            .disabled(viewModel.isLoading)
         }
     }
 }
@@ -48,5 +117,20 @@ struct JournalView: View {
 #Preview {
     PreviewContainer {
         JournalView()
+    }
+}
+
+private extension JournalView {
+    func sectionTitle(for date: Date) -> String {
+        if date.isToday {
+            return "今天"
+        }
+        if date.isYesterday {
+            return "昨天"
+        }
+        if Calendar.current.isDate(date, equalTo: Date(), toGranularity: .year) {
+            return date.formatted(.dateTime.month().day())
+        }
+        return date.formatted(.dateTime.year().month().day())
     }
 }
