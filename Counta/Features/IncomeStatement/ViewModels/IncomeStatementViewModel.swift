@@ -4,8 +4,8 @@ import Foundation
 final class IncomeStatementViewModel: @unchecked Sendable {
     var selectedPeriod: Date = Date()
     var showDatePicker = false
-    var incomeExpanded = true
-    var expensesExpanded = true
+    var incomeExpanded = false
+    var expensesExpanded = false
     var isLoading = false
     var errorMessage: String?
     private(set) var expandedAccountIds: Set<String> = []
@@ -98,8 +98,8 @@ final class IncomeStatementViewModel: @unchecked Sendable {
         preferredCurrency: String?
     ) -> Account {
         let rawBalances = node.balance?.values ?? [:]
-        let normalizedBalances = normalizeBalances(rawBalances)
-        let selection = selectBalance(from: rawBalances, preferredCurrency: preferredCurrency)
+        let normalizedBalances = BalanceAmountHelper.normalizeBalances(rawBalances)
+        let selection = BalanceAmountHelper.selectBalance(from: rawBalances, preferredCurrency: preferredCurrency)
         let nextPreferredCurrency = selection?.currency ?? preferredCurrency
         let children = node.children.map { child in
             makeAccount(from: child, type: type, preferredCurrency: nextPreferredCurrency)
@@ -115,29 +115,6 @@ final class IncomeStatementViewModel: @unchecked Sendable {
             balancesByCurrency: normalizedBalances,
             children: children
         )
-    }
-
-    private func selectBalance(
-        from balances: [String: Decimal],
-        preferredCurrency: String?
-    ) -> BalanceSelection? {
-        guard !balances.isEmpty else { return nil }
-        if let preferredCurrency, let amount = balances[preferredCurrency] {
-            return BalanceSelection(currency: preferredCurrency, amount: amount)
-        }
-        if let amount = balances["CNY"] {
-            return BalanceSelection(currency: "CNY", amount: amount)
-        }
-        if let amount = balances["USD"] {
-            return BalanceSelection(currency: "USD", amount: amount)
-        }
-        let sorted = balances.sorted { $0.key < $1.key }
-        guard let first = sorted.first else { return nil }
-        return BalanceSelection(currency: first.key, amount: first.value)
-    }
-
-    private func normalizeBalances(_ balances: [String: Decimal]) -> [String: Decimal] {
-        balances.mapValues { abs($0) }
     }
 
     private func aggregateBalances(from accounts: [Account]) -> [String: Decimal] {
@@ -164,54 +141,30 @@ final class IncomeStatementViewModel: @unchecked Sendable {
     }
 
     private var primaryCurrency: String {
-        if let currency = selectBalance(from: totalIncomeByCurrency, preferredCurrency: nil)?.currency {
+        if let currency = BalanceAmountHelper.selectBalance(
+            from: totalIncomeByCurrency,
+            preferredCurrency: nil
+        )?.currency {
             return currency
         }
-        if let currency = selectBalance(from: totalExpensesByCurrency, preferredCurrency: nil)?.currency {
+        if let currency = BalanceAmountHelper.selectBalance(
+            from: totalExpensesByCurrency,
+            preferredCurrency: nil
+        )?.currency {
             return currency
         }
         return "CNY"
     }
 
     private func sortedCurrencies(_ currencies: Set<String>) -> [String] {
-        guard !currencies.isEmpty else { return [] }
-        let preferred = primaryCurrency
-        return currencies.sorted {
-            currencySortKey($0, preferred: preferred) < currencySortKey($1, preferred: preferred)
-        }
-    }
-
-    private func currencySortKey(_ currency: String, preferred: String) -> (Int, String) {
-        if currency == preferred {
-            return (0, currency)
-        }
-        switch currency {
-        case "CNY":
-            return (1, currency)
-        case "USD":
-            return (2, currency)
-        case "EUR":
-            return (3, currency)
-        case "JPY":
-            return (4, currency)
-        case "GBP":
-            return (5, currency)
-        default:
-            return (6, currency)
-        }
+        BalanceAmountHelper.sortedCurrencies(currencies, preferred: primaryCurrency)
     }
 
     private func amounts(
         from balances: [String: Decimal],
         sign: Decimal = 1
     ) -> [Amount] {
-        let currencies = sortedCurrencies(Set(balances.keys))
-        if currencies.isEmpty {
-            return [Amount(number: 0, currency: primaryCurrency)]
-        }
-        return currencies.map { currency in
-            Amount(number: (balances[currency] ?? 0) * sign, currency: currency)
-        }
+        BalanceAmountHelper.amounts(from: balances, sign: sign, preferredCurrency: primaryCurrency)
     }
 
     func isAccountExpanded(_ accountId: String) -> Bool {
@@ -231,7 +184,7 @@ final class IncomeStatementViewModel: @unchecked Sendable {
             .union(collectExpandableAccountIds(from: expenseAccounts))
         if !hasInitializedAccountExpansion {
             if !expandableIds.isEmpty {
-                expandedAccountIds = expandableIds
+                expandedAccountIds.removeAll()
                 hasInitializedAccountExpansion = true
             }
         } else {
@@ -262,9 +215,4 @@ final class IncomeStatementViewModel: @unchecked Sendable {
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter
     }()
-}
-
-private struct BalanceSelection {
-    let currency: String
-    let amount: Decimal
 }

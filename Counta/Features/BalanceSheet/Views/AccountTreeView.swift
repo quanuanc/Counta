@@ -1,14 +1,19 @@
 import SwiftUI
 
-struct AccountTreeRow: View {
+struct BalanceSheetAccountTreeRow: View {
     let account: Account
-    @State private var isExpanded = false
+    let viewModel: BalanceSheetViewModel
+    let showCurrencyCode: Bool
 
     var body: some View {
         if account.hasChildren {
-            DisclosureGroup(isExpanded: $isExpanded) {
+            DisclosureGroup(isExpanded: expansionBinding) {
                 ForEach(account.children) { child in
-                    AccountTreeRow(account: child)
+                    BalanceSheetAccountTreeRow(
+                        account: child,
+                        viewModel: viewModel,
+                        showCurrencyCode: showCurrencyCode
+                    )
                 }
             } label: {
                 accountLabel
@@ -19,30 +24,24 @@ struct AccountTreeRow: View {
     }
 
     private var accountLabel: some View {
-        HStack {
-            Text(account.name)
-            Spacer()
-            AmountText(
-                amount: Amount(number: account.totalBalance, currency: account.currency),
-                font: .callout
+        NavigationLink {
+            AccountDetailView(
+                account: account,
+                balanceAmounts: viewModel.displayAmounts(for: account)
+            )
+        } label: {
+            AccountRowView(
+                account: account,
+                amounts: viewModel.displayAmounts(for: account),
+                showCurrencyCode: showCurrencyCode
             )
         }
     }
-}
 
-#Preview {
-    PreviewContainer {
-        List {
-            AccountTreeRow(account: Account(
-                id: "Assets:Bank",
-                name: "银行账户",
-                type: .assets,
-                balance: 0,
-                children: [
-                    Account(id: "Assets:Bank:CCB", name: "建设银行", type: .assets, balance: 100000),
-                    Account(id: "Assets:Bank:CMB", name: "招商银行", type: .assets, balance: 80000),
-                ]
-            ))
-        }
+    private var expansionBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.isAccountExpanded(account.id) },
+            set: { viewModel.setAccountExpanded(account.id, isExpanded: $0) }
+        )
     }
 }

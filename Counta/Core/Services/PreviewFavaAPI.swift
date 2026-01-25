@@ -13,20 +13,27 @@ enum PreviewFavaAPI {
     }
 
     fileprivate static func loadIncomeStatementData() throws -> Data {
-        guard let url = previewJSONURL() else {
+        guard let url = previewJSONURL(path: "docs/income_statement/response.json") else {
             throw PreviewFavaAPIError.missingMockFile
         }
         return try Data(contentsOf: url)
     }
 
-    private static func previewJSONURL() -> URL? {
+    fileprivate static func loadBalanceSheetData() throws -> Data {
+        guard let url = previewJSONURL(path: "docs/balance_sheet/response.json") else {
+            throw PreviewFavaAPIError.missingMockFile
+        }
+        return try Data(contentsOf: url)
+    }
+
+    private static func previewJSONURL(path: String) -> URL? {
         let fileURL = URL(fileURLWithPath: #filePath)
         let repoRoot = fileURL
             .deletingLastPathComponent()
             .deletingLastPathComponent()
             .deletingLastPathComponent()
             .deletingLastPathComponent()
-        return repoRoot.appendingPathComponent("docs/income_statement/response.json")
+        return repoRoot.appendingPathComponent(path)
     }
 }
 
@@ -42,7 +49,7 @@ final class PreviewFavaURLProtocol: URLProtocol {
         guard let url = request.url else { return false }
         guard URLProtocol.property(forKey: handledKey, in: request) == nil else { return false }
         guard url.host == "preview.fava.local" else { return false }
-        return url.path.hasSuffix("/income_statement")
+        return url.path.hasSuffix("/income_statement") || url.path.hasSuffix("/balance_sheet")
     }
 
     override class func canonicalRequest(for request: URLRequest) -> URLRequest {
@@ -58,7 +65,12 @@ final class PreviewFavaURLProtocol: URLProtocol {
         guard let url = mutableRequest.url else { return }
 
         do {
-            let data = try PreviewFavaAPI.loadIncomeStatementData()
+            let data: Data
+            if url.path.hasSuffix("/balance_sheet") {
+                data = try PreviewFavaAPI.loadBalanceSheetData()
+            } else {
+                data = try PreviewFavaAPI.loadIncomeStatementData()
+            }
             guard let response = HTTPURLResponse(
                 url: url,
                 statusCode: 200,

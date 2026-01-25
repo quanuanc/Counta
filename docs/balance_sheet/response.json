@@ -1,0 +1,635 @@
+{
+  "data": {
+    "charts": [
+      {
+        "data": [
+          {
+            "balance": {
+              "IRAUSD": 14400.00,
+              "USD": 9821.61177,
+              "VACHR": 15
+            },
+            "date": "2015-01-31"
+          },
+          {
+            "balance": {
+              "IRAUSD": 12000.00,
+              "USD": 12947.35441,
+              "VACHR": 25
+            },
+            "date": "2015-02-28"
+          },
+          {
+            "balance": {
+              "IRAUSD": 9600.00,
+              "USD": 15950.25076,
+              "VACHR": 35
+            },
+            "date": "2015-03-31"
+          },
+          {
+            "balance": {
+              "IRAUSD": 7200.00,
+              "USD": 18916.61547,
+              "VACHR": 45
+            },
+            "date": "2015-04-30"
+          },
+          {
+            "balance": {
+              "IRAUSD": 4800.00,
+              "USD": 21605.63367,
+              "VACHR": 55
+            },
+            "date": "2015-05-31"
+          },
+          {
+            "balance": {
+              "IRAUSD": 2400.00,
+              "USD": 24820.65921,
+              "VACHR": 65
+            },
+            "date": "2015-06-30"
+          },
+          {
+            "balance": {
+              "USD": 30209.34346,
+              "VACHR": 80
+            },
+            "date": "2015-07-31"
+          },
+          {
+            "balance": {
+              "USD": 31987.30346,
+              "VACHR": 90
+            },
+            "date": "2015-08-31"
+          },
+          {
+            "balance": {
+              "USD": 33734.08346,
+              "VACHR": 28
+            },
+            "date": "2015-09-30"
+          },
+          {
+            "balance": {
+              "USD": 35697.58346,
+              "VACHR": 38
+            },
+            "date": "2015-10-31"
+          },
+          {
+            "balance": {
+              "USD": 37571.62346,
+              "VACHR": 48
+            },
+            "date": "2015-11-30"
+          },
+          {
+            "balance": {
+              "USD": 42588.78346,
+              "VACHR": 63
+            },
+            "date": "2015-12-31"
+          },
+          {
+            "balance": {
+              "IRAUSD": 15600.00,
+              "USD": 45639.49403,
+              "VACHR": 73
+            },
+            "date": "2016-01-31"
+          },
+          {
+            "balance": {
+              "IRAUSD": 13200.00,
+              "USD": 48695.37829,
+              "VACHR": 83
+            },
+            "date": "2016-02-29"
+          },
+          {
+            "balance": {
+              "IRAUSD": 10800.00,
+              "USD": 51353.24839,
+              "VACHR": 93
+            },
+            "date": "2016-03-31"
+          },
+          {
+            "balance": {
+              "IRAUSD": 8400.00,
+              "USD": 54185.27031,
+              "VACHR": 39
+            },
+            "date": "2016-04-30"
+          },
+          {
+            "balance": {
+              "IRAUSD": 6000.00,
+              "USD": 57155.36393,
+              "VACHR": 49
+            },
+            "date": "2016-05-31"
+          },
+          {
+            "balance": {
+              "IRAUSD": 2400.00,
+              "USD": 62792.21931,
+              "VACHR": 64
+            },
+            "date": "2016-06-30"
+          },
+          {
+            "balance": {
+              "USD": 66455.73715,
+              "VACHR": 74
+            },
+            "date": "2016-07-31"
+          },
+          {
+            "balance": {
+              "USD": 68327.84683,
+              "VACHR": 84
+            },
+            "date": "2016-08-31"
+          },
+          {
+            "balance": {
+              "USD": 70187.13683,
+              "VACHR": 94
+            },
+            "date": "2016-09-30"
+          },
+          {
+            "balance": {
+              "USD": 72057.37683,
+              "VACHR": 104
+            },
+            "date": "2016-10-31"
+          },
+          {
+            "balance": {
+              "USD": 73578.24683,
+              "VACHR": 10
+            },
+            "date": "2016-11-30"
+          },
+          {
+            "balance": {
+              "USD": 78380.92683,
+              "VACHR": 25
+            },
+            "date": "2016-12-31"
+          },
+          {
+            "balance": {
+              "IRAUSD": 16100.00,
+              "USD": 81516.69254,
+              "VACHR": 35
+            },
+            "date": "2017-01-31"
+          },
+          {
+            "balance": {
+              "IRAUSD": 13700.00,
+              "USD": 85126.74061,
+              "VACHR": 45
+            },
+            "date": "2017-02-28"
+          },
+          {
+            "balance": {
+              "IRAUSD": 11300.00,
+              "USD": 87355.23587,
+              "VACHR": 55
+            },
+            "date": "2017-03-31"
+          },
+          {
+            "balance": {
+              "IRAUSD": 8900.00,
+              "USD": 90436.34580,
+              "VACHR": 65
+            },
+            "date": "2017-04-30"
+          },
+          {
+            "balance": {
+              "IRAUSD": 6500.00,
+              "USD": 93217.27448,
+              "VACHR": 75
+            },
+            "date": "2017-05-31"
+          },
+          {
+            "balance": {
+              "IRAUSD": 2900.00,
+              "USD": 99523.58784,
+              "VACHR": -38
+            },
+            "date": "2017-06-30"
+          },
+          {
+            "balance": {
+              "IRAUSD": 500.00,
+              "USD": 102507.54901,
+              "VACHR": -28
+            },
+            "date": "2017-07-31"
+          },
+          {
+            "balance": {
+              "USD": 104471.15944,
+              "VACHR": -18
+            },
+            "date": "2017-08-31"
+          },
+          {
+            "balance": {
+              "USD": 106826.04944,
+              "VACHR": -13
+            },
+            "date": "2017-09-30"
+          }
+        ],
+        "label": "Net Worth",
+        "type": "balances"
+      }
+    ],
+    "date_range": null,
+    "trees": [
+      {
+        "account": "Assets",
+        "balance": {},
+        "balance_children": {
+          "USD": 109529.33944,
+          "VACHR": -13
+        },
+        "children": [
+          {
+            "account": "Assets:US",
+            "balance": {},
+            "balance_children": {
+              "USD": 109529.33944,
+              "VACHR": -13
+            },
+            "children": [
+              {
+                "account": "Assets:US:BofA",
+                "balance": {},
+                "balance_children": {
+                  "USD": 2754.06
+                },
+                "children": [
+                  {
+                    "account": "Assets:US:BofA:Checking",
+                    "balance": {
+                      "USD": 2754.06
+                    },
+                    "balance_children": {
+                      "USD": 2754.06
+                    },
+                    "children": [],
+                    "cost": null,
+                    "cost_children": null,
+                    "has_txns": true
+                  }
+                ],
+                "cost": null,
+                "cost_children": null,
+                "has_txns": false
+              },
+              {
+                "account": "Assets:US:ETrade",
+                "balance": {},
+                "balance_children": {
+                  "USD": 25025.28
+                },
+                "children": [
+                  {
+                    "account": "Assets:US:ETrade:Cash",
+                    "balance": {
+                      "USD": 855.83
+                    },
+                    "balance_children": {
+                      "USD": 855.83
+                    },
+                    "children": [],
+                    "cost": null,
+                    "cost_children": null,
+                    "has_txns": true
+                  },
+                  {
+                    "account": "Assets:US:ETrade:GLD",
+                    "balance": {
+                      "USD": 4559.80
+                    },
+                    "balance_children": {
+                      "USD": 4559.80
+                    },
+                    "children": [],
+                    "cost": null,
+                    "cost_children": null,
+                    "has_txns": true
+                  },
+                  {
+                    "account": "Assets:US:ETrade:ITOT",
+                    "balance": {
+                      "USD": 6828.88
+                    },
+                    "balance_children": {
+                      "USD": 6828.88
+                    },
+                    "children": [],
+                    "cost": null,
+                    "cost_children": null,
+                    "has_txns": true
+                  },
+                  {
+                    "account": "Assets:US:ETrade:VEA",
+                    "balance": {
+                      "USD": 4959.50
+                    },
+                    "balance_children": {
+                      "USD": 4959.50
+                    },
+                    "children": [],
+                    "cost": null,
+                    "cost_children": null,
+                    "has_txns": true
+                  },
+                  {
+                    "account": "Assets:US:ETrade:VHT",
+                    "balance": {
+                      "USD": 7821.27
+                    },
+                    "balance_children": {
+                      "USD": 7821.27
+                    },
+                    "children": [],
+                    "cost": null,
+                    "cost_children": null,
+                    "has_txns": true
+                  }
+                ],
+                "cost": null,
+                "cost_children": null,
+                "has_txns": false
+              },
+              {
+                "account": "Assets:US:Federal",
+                "balance": {},
+                "balance_children": {},
+                "children": [
+                  {
+                    "account": "Assets:US:Federal:PreTax401k",
+                    "balance": {},
+                    "balance_children": {},
+                    "children": [],
+                    "cost": null,
+                    "cost_children": null,
+                    "has_txns": true
+                  }
+                ],
+                "cost": null,
+                "cost_children": null,
+                "has_txns": false
+              },
+              {
+                "account": "Assets:US:Hoogle",
+                "balance": {},
+                "balance_children": {
+                  "VACHR": -13
+                },
+                "children": [
+                  {
+                    "account": "Assets:US:Hoogle:Vacation",
+                    "balance": {
+                      "VACHR": -13
+                    },
+                    "balance_children": {
+                      "VACHR": -13
+                    },
+                    "children": [],
+                    "cost": null,
+                    "cost_children": null,
+                    "has_txns": true
+                  }
+                ],
+                "cost": null,
+                "cost_children": null,
+                "has_txns": false
+              },
+              {
+                "account": "Assets:US:Vanguard",
+                "balance": {},
+                "balance_children": {
+                  "USD": 81749.99944
+                },
+                "children": [
+                  {
+                    "account": "Assets:US:Vanguard:Cash",
+                    "balance": {
+                      "USD": -0.02
+                    },
+                    "balance_children": {
+                      "USD": -0.02
+                    },
+                    "children": [],
+                    "cost": null,
+                    "cost_children": null,
+                    "has_txns": true
+                  },
+                  {
+                    "account": "Assets:US:Vanguard:RGAGX",
+                    "balance": {
+                      "USD": 49049.66613
+                    },
+                    "balance_children": {
+                      "USD": 49049.66613
+                    },
+                    "children": [],
+                    "cost": null,
+                    "cost_children": null,
+                    "has_txns": true
+                  },
+                  {
+                    "account": "Assets:US:Vanguard:VBMPX",
+                    "balance": {
+                      "USD": 32700.35331
+                    },
+                    "balance_children": {
+                      "USD": 32700.35331
+                    },
+                    "children": [],
+                    "cost": null,
+                    "cost_children": null,
+                    "has_txns": true
+                  }
+                ],
+                "cost": null,
+                "cost_children": null,
+                "has_txns": false
+              }
+            ],
+            "cost": null,
+            "cost_children": null,
+            "has_txns": false
+          }
+        ],
+        "cost": null,
+        "cost_children": null,
+        "has_txns": false
+      },
+      {
+        "account": "Liabilities",
+        "balance": {},
+        "balance_children": {
+          "USD": -2703.29
+        },
+        "children": [
+          {
+            "account": "Liabilities:AccountsPayable",
+            "balance": {},
+            "balance_children": {},
+            "children": [],
+            "cost": null,
+            "cost_children": null,
+            "has_txns": true
+          },
+          {
+            "account": "Liabilities:US",
+            "balance": {},
+            "balance_children": {
+              "USD": -2703.29
+            },
+            "children": [
+              {
+                "account": "Liabilities:US:Chase",
+                "balance": {},
+                "balance_children": {
+                  "USD": -2703.29
+                },
+                "children": [
+                  {
+                    "account": "Liabilities:US:Chase:Slate",
+                    "balance": {
+                      "USD": -2703.29
+                    },
+                    "balance_children": {
+                      "USD": -2703.29
+                    },
+                    "children": [],
+                    "cost": null,
+                    "cost_children": null,
+                    "has_txns": true
+                  }
+                ],
+                "cost": null,
+                "cost_children": null,
+                "has_txns": false
+              }
+            ],
+            "cost": null,
+            "cost_children": null,
+            "has_txns": false
+          }
+        ],
+        "cost": null,
+        "cost_children": null,
+        "has_txns": false
+      },
+      {
+        "account": "Equity",
+        "balance": {},
+        "balance_children": {
+          "USD": -106826.04944,
+          "VACHR": 13
+        },
+        "children": [
+          {
+            "account": "Equity:Conversions",
+            "balance": {},
+            "balance_children": {
+              "USD": 0.00056
+            },
+            "children": [
+              {
+                "account": "Equity:Conversions:Current",
+                "balance": {
+                  "USD": 0.00056
+                },
+                "balance_children": {
+                  "USD": 0.00056
+                },
+                "children": [],
+                "cost": null,
+                "cost_children": null,
+                "has_txns": true
+              }
+            ],
+            "cost": null,
+            "cost_children": null,
+            "has_txns": false
+          },
+          {
+            "account": "Equity:Earnings",
+            "balance": {},
+            "balance_children": {
+              "USD": -103335.53,
+              "VACHR": 13
+            },
+            "children": [
+              {
+                "account": "Equity:Earnings:Current",
+                "balance": {
+                  "USD": -103335.53,
+                  "VACHR": 13
+                },
+                "balance_children": {
+                  "USD": -103335.53,
+                  "VACHR": 13
+                },
+                "children": [],
+                "cost": null,
+                "cost_children": null,
+                "has_txns": true
+              }
+            ],
+            "cost": null,
+            "cost_children": null,
+            "has_txns": false
+          },
+          {
+            "account": "Equity:Opening-Balances",
+            "balance": {
+              "USD": -3490.52
+            },
+            "balance_children": {
+              "USD": -3490.52
+            },
+            "children": [],
+            "cost": null,
+            "cost_children": null,
+            "has_txns": true
+          },
+          {
+            "account": "Equity:Unrealized",
+            "balance": {},
+            "balance_children": {},
+            "children": [],
+            "cost": null,
+            "cost_children": null,
+            "has_txns": true
+          }
+        ],
+        "cost": null,
+        "cost_children": null,
+        "has_txns": false
+      }
+    ]
+  },
+  "mtime": "0"
+}

@@ -2,22 +2,71 @@ import SwiftUI
 
 struct BalanceSheetView: View {
     @State private var viewModel = BalanceSheetViewModel()
+    @AppStorage(AppStorageKeys.currencyDisplayMode) private var currencyDisplayMode: CurrencyDisplayMode = .symbol
 
     var body: some View {
         NavigationStack {
             List {
-                summarySection
+                if let errorMessage = viewModel.errorMessage {
+                    errorSection(message: errorMessage)
+                }
 
-                assetsSection
-
-                liabilitiesSection
-
-                equitySection
+                if viewModel.isLoading && isEmptyState {
+                    loadingSection
+                } else if isEmptyState {
+                    emptySection
+                } else {
+                    summarySection
+                    assetsSection
+                    liabilitiesSection
+                    equitySection
+                }
             }
             .navigationTitle("资产负债表")
             .refreshable {
                 await viewModel.refresh()
             }
+            .task {
+                await viewModel.loadIfNeeded()
+            }
+        }
+    }
+
+    private var isEmptyState: Bool {
+        viewModel.assetAccounts.isEmpty
+            && viewModel.liabilityAccounts.isEmpty
+            && viewModel.equityAccounts.isEmpty
+    }
+
+    private var showCurrencyCode: Bool {
+        currencyDisplayMode == .code
+    }
+
+    private func errorSection(message: String) -> some View {
+        Section {
+            Text(message)
+                .font(.footnote)
+                .foregroundStyle(.red)
+        }
+    }
+
+    private var loadingSection: some View {
+        Section {
+            HStack {
+                Spacer()
+                ProgressView()
+                Spacer()
+            }
+        }
+    }
+
+    private var emptySection: some View {
+        Section {
+            ContentUnavailableView(
+                "暂无资产负债表数据",
+                systemImage: "chart.bar.doc.horizontal",
+                description: Text("请检查 Fava 连接设置")
+            )
         }
     }
 
@@ -29,20 +78,23 @@ struct BalanceSheetView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     Spacer()
-                    AmountText(
-                        amount: Amount(number: viewModel.netWorth),
-                        font: .title2.bold()
+                    AmountListView(
+                        amounts: viewModel.netWorthAmounts,
+                        font: .title2.bold(),
+                        showCurrencyCode: showCurrencyCode
                     )
                 }
 
-                HStack {
+                HStack(spacing: 20) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("资产")
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                        AmountText(
-                            amount: Amount(number: viewModel.totalAssets),
-                            font: .callout
+                        AmountListView(
+                            amounts: viewModel.totalAssetsAmounts,
+                            font: .callout,
+                            showCurrencyCode: showCurrencyCode,
+                            alignment: .leading
                         )
                     }
 
@@ -52,9 +104,11 @@ struct BalanceSheetView: View {
                         Text("负债")
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                        AmountText(
-                            amount: Amount(number: -viewModel.totalLiabilities),
-                            font: .callout
+                        AmountListView(
+                            amounts: viewModel.totalLiabilitiesAmounts,
+                            font: .callout,
+                            showCurrencyCode: showCurrencyCode,
+                            alignment: .trailing
                         )
                     }
                 }
@@ -67,20 +121,26 @@ struct BalanceSheetView: View {
         Section {
             DisclosureGroup(isExpanded: $viewModel.assetsExpanded) {
                 ForEach(viewModel.assetAccounts) { account in
-                    AccountTreeRow(account: account)
+                    BalanceSheetAccountTreeRow(
+                        account: account,
+                        viewModel: viewModel,
+                        showCurrencyCode: showCurrencyCode
+                    )
                 }
             } label: {
                 HStack {
-                    AccountIcon(accountType: .assets)
-                    Text("资产 Assets")
-                        .font(.headline)
+                    Text("Assets")
+                        .font(.body)
                     Spacer()
-                    AmountText(
-                        amount: Amount(number: viewModel.totalAssets),
-                        font: .callout.bold()
+                    AmountListView(
+                        amounts: viewModel.totalAssetsAmounts,
+                        font: .callout.bold(),
+                        showCurrencyCode: showCurrencyCode
                     )
                 }
             }
+        } header: {
+            sectionHeader(title: "资产", accountType: .assets)
         }
     }
 
@@ -88,20 +148,26 @@ struct BalanceSheetView: View {
         Section {
             DisclosureGroup(isExpanded: $viewModel.liabilitiesExpanded) {
                 ForEach(viewModel.liabilityAccounts) { account in
-                    AccountTreeRow(account: account)
+                    BalanceSheetAccountTreeRow(
+                        account: account,
+                        viewModel: viewModel,
+                        showCurrencyCode: showCurrencyCode
+                    )
                 }
             } label: {
                 HStack {
-                    AccountIcon(accountType: .liabilities)
-                    Text("负债 Liabilities")
-                        .font(.headline)
+                    Text("Liabilities")
+                        .font(.body)
                     Spacer()
-                    AmountText(
-                        amount: Amount(number: viewModel.totalLiabilities),
-                        font: .callout.bold()
+                    AmountListView(
+                        amounts: viewModel.totalLiabilitiesAmounts,
+                        font: .callout.bold(),
+                        showCurrencyCode: showCurrencyCode
                     )
                 }
             }
+        } header: {
+            sectionHeader(title: "负债", accountType: .liabilities)
         }
     }
 
@@ -109,21 +175,37 @@ struct BalanceSheetView: View {
         Section {
             DisclosureGroup(isExpanded: $viewModel.equityExpanded) {
                 ForEach(viewModel.equityAccounts) { account in
-                    AccountTreeRow(account: account)
+                    BalanceSheetAccountTreeRow(
+                        account: account,
+                        viewModel: viewModel,
+                        showCurrencyCode: showCurrencyCode
+                    )
                 }
             } label: {
                 HStack {
-                    AccountIcon(accountType: .equity)
-                    Text("权益 Equity")
-                        .font(.headline)
+                    Text("Equity")
+                        .font(.body)
                     Spacer()
-                    AmountText(
-                        amount: Amount(number: viewModel.totalEquity),
-                        font: .callout.bold()
+                    AmountListView(
+                        amounts: viewModel.totalEquityAmounts,
+                        font: .callout.bold(),
+                        showCurrencyCode: showCurrencyCode
                     )
                 }
             }
+        } header: {
+            sectionHeader(title: "权益", accountType: .equity)
         }
+    }
+
+    private func sectionHeader(title: String, accountType: AccountType) -> some View {
+        HStack(spacing: 8) {
+            AccountIcon(accountType: accountType, size: 18)
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+        }
+        .textCase(nil)
     }
 }
 
