@@ -1,0 +1,72 @@
+Counta Source-Available License (Non-Commercial, Share-Alike)
+Version 1.0 — 2026-01-25
+
+Copyright (c) 2026 Counta contributors
+
+This is NOT an open source license. It restricts commercial use.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to use,
+copy, and modify the Software for personal, educational, and other
+non-commercial purposes only, subject to the following conditions:
+
+1) Non-Commercial Use Only
+   You may not use the Software, in whole or in part, for any commercial
+   purpose. "Commercial purpose" includes, without limitation:
+   - selling, licensing, or otherwise monetizing the Software;
+   - using the Software or derivatives to provide paid products/services;
+   - using the Software or derivatives within a for-profit organization for
+     production/business operations beyond evaluation or internal learning;
+   - offering the Software or derivatives as a hosted or managed service
+     (SaaS), whether paid or free, where the service itself is commercial.
+
+2) Share-Alike for Redistribution
+   If you distribute, publish, or otherwise make available copies of the
+   Software or a modified version ("Derivative Works") to any third party, you
+   must:
+   (a) provide the complete corresponding source code of what you distribute,
+       including your modifications; and
+   (b) license the distributed Software/Derivative Works under this same
+       license, without adding further restrictions; and
+   (c) include a copy of this LICENSE file and retain all copyright notices.
+
+3) Attribution
+   Any redistribution (source or binary) must include prominent attribution to
+   the original project, including the project name "Counta" and a link to the
+   upstream repository, if available.
+
+4) No Trademark License
+   This license does not grant permission to use any trademarks, logos, or
+   brand names of the authors or contributors, except as required for
+   attribution under Section 3.
+
+5) Termination
+   Any violation of this license automatically terminates your rights. Upon
+   termination, you must cease all use and distribution of the Software and
+   destroy any copies in your possession, except as required by law.
+
+6) DISCLAIMER OF WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+7) LIMITATION OF LIABILITY
+   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+   DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+   OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+   USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+8) Commercial Licensing
+   Commercial use is not permitted under this license. If you want to use the
+   Software commercially, you must obtain a separate commercial license from
+   the copyright holder(s).
+
+-------------------------------------------------------------------------------
+中文摘要（以英文条款为准）
+
+- 允许：个人/学习/研究等非商业用途下的使用、复制、修改。
+- 禁止：任何商业用途（包括售卖、变现、用于付费服务/产品、以服务形式对外提供等）。
+- 分发要求：如果你把原版或修改版分发给他人，必须同时提供完整源码、使用同一许可证、
+  保留版权声明并注明来源。
+- 免责声明：软件按“原样”提供，不承担担保与责任。
+
