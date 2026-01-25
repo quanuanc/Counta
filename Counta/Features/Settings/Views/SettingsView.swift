@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @State private var viewModel = SettingsViewModel()
     @AppStorage(AppStorageKeys.favaApiURL) private var storedFavaApiURL = ""
+    @AppStorage(AppStorageKeys.currencyDisplayMode) private var currencyDisplayMode: CurrencyDisplayMode = .symbol
 
     var body: some View {
         NavigationStack {
@@ -39,15 +40,15 @@ struct SettingsView: View {
     private var displaySection: some View {
         Section("显示") {
             NavigationLink {
-                Text("货币设置 - 待实现")
+                CurrencySettingsView()
             } label: {
                 HStack {
                     Image(systemName: "dollarsign.circle")
                         .foregroundStyle(.green)
                         .frame(width: 28)
-                    Text("默认货币")
+                    Text("货币显示")
                     Spacer()
-                    Text(viewModel.defaultCurrency)
+                    Text(currencyDisplayMode.title)
                         .foregroundStyle(.secondary)
                 }
             }

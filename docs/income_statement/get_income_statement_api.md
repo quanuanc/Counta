@@ -1,6 +1,7 @@
-// request
-// get /income_statement
-// response example:
+request: `get /income_statement`
+
+response example:
+```json
 {
   "data": {
     "charts": [
@@ -678,3 +679,4 @@
   },
   "mtime": "0"
 }
+```

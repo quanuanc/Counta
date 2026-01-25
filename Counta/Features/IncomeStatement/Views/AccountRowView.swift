@@ -6,8 +6,10 @@ struct AccountRowView: View {
     var showCurrencyCode: Bool = false
     var indentLevel: Int = 0
 
+    @AppStorage(AppStorageKeys.currencyDisplayMode) private var currencyDisplayMode: CurrencyDisplayMode = .symbol
+
     private var shouldShowCurrencyCode: Bool {
-        showCurrencyCode || amounts.count > 1
+        showCurrencyCode || currencyDisplayMode == .code
     }
 
     var body: some View {

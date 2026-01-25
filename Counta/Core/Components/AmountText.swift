@@ -6,6 +6,8 @@ struct AmountText: View {
     var font: Font = .body
     var showCurrencyCode: Bool = false
 
+    @AppStorage(AppStorageKeys.currencyDisplayMode) private var currencyDisplayMode: CurrencyDisplayMode = .symbol
+
     private var textColor: Color {
         if amount.isPositive {
             return .green
@@ -16,22 +18,32 @@ struct AmountText: View {
         }
     }
 
-    private var currencySymbol: String? {
-        switch amount.currency {
+    private var effectiveCurrencyDisplayMode: CurrencyDisplayMode {
+        showCurrencyCode ? .code : currencyDisplayMode
+    }
+
+    private var currencyCode: String {
+        amount.currency.uppercased()
+    }
+
+    private var currencySymbol: String {
+        switch currencyCode {
         case "CNY": return "¥"
         case "USD": return "$"
         case "EUR": return "€"
         case "JPY": return "¥"
         case "GBP": return "£"
-        default: return nil
+        default: return "¤"
         }
     }
 
     private var currencyPrefix: String {
-        if let currencySymbol {
+        switch effectiveCurrencyDisplayMode {
+        case .symbol:
             return currencySymbol + " "
+        case .code:
+            return currencyCode + " "
         }
-        return amount.currency + " "
     }
 
     private var displayText: String {

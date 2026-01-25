@@ -2,6 +2,7 @@ import SwiftUI
 
 struct IncomeStatementView: View {
     @State private var viewModel = IncomeStatementViewModel()
+    @AppStorage(AppStorageKeys.currencyDisplayMode) private var currencyDisplayMode: CurrencyDisplayMode = .symbol
 
     var body: some View {
         NavigationStack {
@@ -35,7 +36,7 @@ struct IncomeStatementView: View {
     }
 
     private var showCurrencyCode: Bool {
-        viewModel.summaryCurrencies.count > 1
+        currencyDisplayMode == .code
     }
 
     private func errorSection(message: String) -> some View {
