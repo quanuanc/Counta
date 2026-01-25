@@ -39,10 +39,10 @@ struct AccountDetailView: View {
     }
 
     private var accountInfoSection: some View {
-        Section("账户信息") {
-            LabeledContent("完整名称", value: account.id)
+        Section(L10n.AccountDetail.sectionAccountInfo) {
+            LabeledContent(L10n.AccountDetail.fullName, value: account.id)
             HStack {
-                Text("类型")
+                Text(L10n.AccountDetail.type)
                 Spacer()
                 AccountTypeBadge(type: account.type)
             }
@@ -50,12 +50,12 @@ struct AccountDetailView: View {
     }
 
     private var balanceSection: some View {
-        Section("余额") {
+        Section(L10n.AccountDetail.sectionBalance) {
             if viewModel.isLoading && viewModel.balanceAmounts.isEmpty {
                 loadingRow
             } else {
                 HStack {
-                    Text("当前余额")
+                    Text(L10n.AccountDetail.currentBalance)
                     Spacer()
                     BalanceAmountList(amounts: viewModel.balanceAmounts)
                 }
@@ -66,12 +66,12 @@ struct AccountDetailView: View {
     @ViewBuilder
     private var transactionsSection: some View {
         if viewModel.isLoading && viewModel.relatedEntries.isEmpty {
-            Section("相关交易") {
+            Section(L10n.AccountDetail.sectionRelatedTransactions) {
                 loadingRow
             }
         } else if viewModel.relatedEntries.isEmpty {
-            Section("相关交易") {
-                Text("暂无相关交易")
+            Section(L10n.AccountDetail.sectionRelatedTransactions) {
+                Text(L10n.AccountDetail.noRelatedTransactions)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -155,21 +155,6 @@ private struct AccountTypeBadge: View {
 }
 
 extension AccountType {
-    fileprivate var localizedTitle: String {
-        switch self {
-        case .assets:
-            return "资产"
-        case .liabilities:
-            return "负债"
-        case .income:
-            return "收入"
-        case .expenses:
-            return "支出"
-        case .equity:
-            return "权益"
-        }
-    }
-
     fileprivate var tintColor: Color {
         switch self {
         case .assets:

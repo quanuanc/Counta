@@ -24,21 +24,21 @@ struct JournalEntryDetailView: View {
     }
 
     private var overviewSection: some View {
-        Section("概览") {
-            LabeledContent("日期", value: entry.date.formatted(.dateTime.year().month().day()))
-            LabeledContent("类型", value: entry.kind.localizedTitle)
+        Section(L10n.Journal.detailOverview) {
+            LabeledContent(L10n.Journal.detailDate, value: entry.date.formatted(.dateTime.year().month().day()))
+            LabeledContent(L10n.Journal.detailKind, value: String(localized: entry.kind.localizedTitle))
 
             if let status = entry.status {
-                LabeledContent("状态", value: status.localizedTitle)
+                LabeledContent(L10n.Journal.detailStatus, value: String(localized: status.localizedTitle))
             }
 
             if let flag = entry.flag, !flag.isEmpty {
-                LabeledContent("标记", value: flag)
+                LabeledContent(L10n.Journal.detailFlag, value: flag)
             }
 
             if let amount = entry.displayAmount {
                 HStack {
-                    Text("金额")
+                    Text(L10n.Journal.detailAmount)
                     Spacer()
                     AmountText(amount: amount, showSign: true, font: .body.weight(.semibold))
                 }
@@ -47,16 +47,16 @@ struct JournalEntryDetailView: View {
     }
 
     private var descriptionSection: some View {
-        Section("描述") {
-            LabeledContent("交易方", value: payeeValue)
-            LabeledContent("摘要", value: narrationValue)
+        Section(L10n.Journal.detailDescription) {
+            LabeledContent(L10n.Journal.detailPayee, value: payeeValue)
+            LabeledContent(L10n.Journal.detailNarration, value: narrationValue)
         }
     }
 
     private var postingsSection: some View {
-        Section("分录") {
+        Section(L10n.Journal.detailPostings) {
             if entry.postings.isEmpty {
-                Text("暂无分录")
+                Text(L10n.Journal.detailNoPostings)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             } else {
@@ -86,40 +86,6 @@ private struct JournalPostingDetailRow: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
-        }
-    }
-}
-
-private extension JournalEntryKind {
-    var localizedTitle: String {
-        switch self {
-        case .transaction:
-            return "交易"
-        case .open:
-            return "开账"
-        case .balance:
-            return "余额"
-        case .price:
-            return "价格"
-        case .note:
-            return "备注"
-        case .pad:
-            return "调整"
-        case .other:
-            return "其他"
-        }
-    }
-}
-
-private extension JournalEntryStatus {
-    var localizedTitle: String {
-        switch self {
-        case .cleared:
-            return "已清算"
-        case .pending:
-            return "待确认"
-        case .other:
-            return "其他"
         }
     }
 }

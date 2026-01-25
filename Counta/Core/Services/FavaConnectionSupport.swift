@@ -28,13 +28,13 @@ enum FavaURLResolver {
         var errorDescription: String? {
             switch self {
             case .invalidURL:
-                return "请输入有效的 Fava 地址"
+                return String(localized: L10n.Errors.favaResolverInvalidURL)
             case .invalidResponse:
-                return "无法解析 Fava 地址，请检查服务器是否可访问"
+                return String(localized: L10n.Errors.favaResolverInvalidResponse)
             case .missingLedgerPath:
-                return "无法识别账本路径，请检查 Fava 首页是否可访问"
+                return String(localized: L10n.Errors.favaResolverMissingLedgerPath)
             case .requestFailed(let error):
-                return "连接失败：\(error.localizedDescription)"
+                return L10n.Errors.favaResolverRequestFailed(error)
             }
         }
     }

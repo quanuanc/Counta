@@ -1,6 +1,14 @@
 import Foundation
 
 extension Date {
+    private static let relativeDayFormatter: RelativeDateTimeFormatter = {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.locale = .current
+        formatter.unitsStyle = .full
+        formatter.dateTimeStyle = .named
+        return formatter
+    }()
+
     var startOfDay: Date {
         Calendar.current.startOfDay(for: self)
     }
@@ -30,29 +38,19 @@ extension Date {
     }
 
     var relativeDescription: String {
-        if isToday {
-            return "今天"
-        } else if isYesterday {
-            return "昨天"
-        } else {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "M月d日"
-            return formatter.string(from: self)
+        if isToday || isYesterday {
+            return Self.relativeDayFormatter.localizedString(for: self, relativeTo: Date())
         }
+        return formatted(.dateTime.month().day())
     }
 
     var monthYearDescription: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy年M月"
-        return formatter.string(from: self)
+        formatted(.dateTime.year().month())
     }
 
     var journalSectionTitle: String {
-        if isToday {
-            return "今天"
-        }
-        if isYesterday {
-            return "昨天"
+        if isToday || isYesterday {
+            return Self.relativeDayFormatter.localizedString(for: self, relativeTo: Date())
         }
         if Calendar.current.isDate(self, equalTo: Date(), toGranularity: .year) {
             return formatted(.dateTime.month().day())
@@ -61,8 +59,6 @@ extension Date {
     }
 
     var timeDescription: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        return formatter.string(from: self)
+        formatted(.dateTime.hour().minute())
     }
 }

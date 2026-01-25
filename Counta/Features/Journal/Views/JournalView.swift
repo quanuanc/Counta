@@ -22,8 +22,8 @@ struct JournalView: View {
                     }
                 }
             }
-            .navigationTitle("日记账")
-            .searchable(text: $searchText, prompt: "搜索交易")
+            .navigationTitle(L10n.Titles.journal)
+            .searchable(text: $searchText, prompt: L10n.Journal.searchPrompt)
             .refreshable {
                 await viewModel.refresh()
             }
@@ -65,9 +65,9 @@ struct JournalView: View {
     private var emptySection: some View {
         Section {
             ContentUnavailableView(
-                "暂无日记账数据",
+                L10n.Journal.emptyTitle,
                 systemImage: "book",
-                description: Text("请检查 Fava 连接设置")
+                description: Text(L10n.Common.checkFavaSettings)
             )
         }
     }
@@ -88,7 +88,7 @@ struct JournalView: View {
                     if viewModel.isLoading {
                         ProgressView()
                     } else {
-                        Text("加载更多")
+                        Text(L10n.Journal.loadMore)
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(.secondary)
                     }

@@ -13,12 +13,12 @@ struct SettingsView: View {
                 displaySection
                 aboutSection
             }
-            .navigationTitle("设置")
+            .navigationTitle(L10n.Titles.settings)
         }
     }
 
     private var favaConnectionSection: some View {
-        Section("连接") {
+        Section(L10n.Settings.sectionConnection) {
             NavigationLink {
                 WelcomeView(context: .settings)
             } label: {
@@ -27,11 +27,18 @@ struct SettingsView: View {
                         .foregroundStyle(.blue)
                         .frame(width: 28)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Fava 服务器")
-                        Text(displayFavaURL.isEmpty ? "未设置" : displayFavaURL)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
+                        Text(L10n.Settings.favaServer)
+                        if displayFavaURL.isEmpty {
+                            Text(L10n.Settings.notSet)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                        } else {
+                            Text(displayFavaURL)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                        }
                     }
                 }
             }
@@ -47,10 +54,10 @@ struct SettingsView: View {
     }
 
     private var displaySection: some View {
-        Section("显示") {
+        Section(L10n.Settings.sectionDisplay) {
             Picker(selection: $currencyDisplayMode) {
                 ForEach(CurrencyDisplayMode.allCases) { mode in
-                    Text("\(mode.title) (\(mode.example))")
+                    Text(mode.displayTitle)
                         .tag(mode)
                 }
             } label: {
@@ -59,8 +66,8 @@ struct SettingsView: View {
                         .foregroundStyle(.green)
                         .frame(width: 28)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("货币显示")
-                        Text("非常见货币将使用符号¤")
+                        Text(L10n.Settings.currencyDisplay)
+                        Text(L10n.Settings.currencyUncommonSymbolNote)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -71,7 +78,7 @@ struct SettingsView: View {
     }
 
     private var aboutSection: some View {
-        Section("关于") {
+        Section(L10n.Settings.sectionAbout) {
             NavigationLink {
                 AboutView()
             } label: {
@@ -79,7 +86,7 @@ struct SettingsView: View {
                     Image(systemName: "info.circle")
                         .foregroundStyle(.gray)
                         .frame(width: 28)
-                    Text("关于 Counta")
+                    Text(L10n.Settings.aboutCounta)
                 }
             }
         }
@@ -100,7 +107,7 @@ struct AboutView: View {
                         Text("Counta")
                             .font(.title.bold())
 
-                        Text("基于 Beancount 的财务管理")
+                        Text(L10n.Settings.aboutTagline)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
@@ -110,14 +117,14 @@ struct AboutView: View {
             }
 
             Section {
-                LabeledContent("版本", value: "1.0.0")
-                LabeledContent("构建", value: "1")
+                LabeledContent(L10n.Settings.aboutVersion, value: "1.0.0")
+                LabeledContent(L10n.Settings.aboutBuild, value: "1")
             }
 
             Section {
                 Link(destination: URL(string: "https://beancount.github.io")!) {
                     HStack {
-                        Text("Beancount 官网")
+                        Text(L10n.Settings.aboutBeancountWebsite)
                         Spacer()
                         Image(systemName: "arrow.up.right.square")
                             .foregroundStyle(.secondary)
@@ -125,7 +132,7 @@ struct AboutView: View {
                 }
             }
         }
-        .navigationTitle("关于")
+        .navigationTitle(L10n.Titles.about)
         .navigationBarTitleDisplayMode(.inline)
     }
 }

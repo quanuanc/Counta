@@ -68,7 +68,8 @@ final class BalanceSheetViewModel: @unchecked Sendable {
             apply(data)
             hasLoaded = true
         } catch {
-            errorMessage = (error as? LocalizedError)?.errorDescription ?? "无法加载资产负债表数据"
+            errorMessage = (error as? LocalizedError)?.errorDescription
+                ?? String(localized: L10n.Errors.vmLoadBalanceSheet)
         }
     }
 

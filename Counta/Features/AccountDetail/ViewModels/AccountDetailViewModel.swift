@@ -42,7 +42,8 @@ final class AccountDetailViewModel: @unchecked Sendable {
             apply(data)
             hasLoaded = true
         } catch {
-            errorMessage = (error as? LocalizedError)?.errorDescription ?? "无法加载账户明细数据"
+            errorMessage = (error as? LocalizedError)?.errorDescription
+                ?? String(localized: L10n.Errors.vmLoadAccountDetail)
         }
     }
 

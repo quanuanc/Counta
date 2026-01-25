@@ -6,12 +6,21 @@ enum CurrencyDisplayMode: String, CaseIterable, Identifiable, Sendable {
 
     var id: String { rawValue }
 
-    var title: String {
+    var title: LocalizedStringResource {
         switch self {
         case .symbol:
-            return "符号"
+            return L10n.CurrencyDisplayMode.symbolTitle
         case .code:
-            return "缩写"
+            return L10n.CurrencyDisplayMode.codeTitle
+        }
+    }
+
+    var displayTitle: LocalizedStringResource {
+        switch self {
+        case .symbol:
+            return L10n.CurrencyDisplayMode.symbolItem
+        case .code:
+            return L10n.CurrencyDisplayMode.codeItem
         }
     }
 

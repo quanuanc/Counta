@@ -5,30 +5,30 @@ struct WelcomeView: View {
         case onboarding
         case settings
 
-        var title: String {
+        var title: LocalizedStringResource {
             switch self {
             case .onboarding:
-                return "欢迎使用 Counta"
+                return L10n.Onboarding.titleOnboarding
             case .settings:
-                return "连接 Fava"
+                return L10n.Onboarding.titleSettings
             }
         }
 
-        var subtitle: String {
+        var subtitle: LocalizedStringResource {
             switch self {
             case .onboarding:
-                return "请输入 Fava 地址以连接账本数据"
+                return L10n.Onboarding.subtitleOnboarding
             case .settings:
-                return "更新 Fava 地址和登录信息"
+                return L10n.Onboarding.subtitleSettings
             }
         }
 
-        var actionTitle: String {
+        var actionTitle: LocalizedStringResource {
             switch self {
             case .onboarding:
-                return "开始使用"
+                return L10n.Onboarding.actionStart
             case .settings:
-                return "保存"
+                return L10n.Onboarding.actionSave
             }
         }
 
@@ -37,7 +37,7 @@ struct WelcomeView: View {
             case .onboarding:
                 return ""
             case .settings:
-                return "Fava 连接"
+                return L10n.string(L10n.Onboarding.navigationTitle)
             }
         }
 
@@ -113,7 +113,7 @@ struct WelcomeView: View {
                         if isResolvingURL {
                             ProgressView()
                         }
-                        Text(isResolvingURL ? "连接中..." : context.actionTitle)
+                        Text(isResolvingURL ? L10n.Common.connecting : context.actionTitle)
                     }
                         .frame(maxWidth: .infinity)
                 }
@@ -154,7 +154,7 @@ struct WelcomeView: View {
     private var inputSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Fava 地址")
+                Text(L10n.Onboarding.favaAddress)
                     .font(.headline)
 
                 TextField("https://fava.pythonanywhere.com", text: $favaBaseURLInput)
@@ -175,10 +175,10 @@ struct WelcomeView: View {
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Toggle("需要登录（Basic Auth）", isOn: $usesBasicAuth)
+                Toggle(L10n.Onboarding.basicAuthToggle, isOn: $usesBasicAuth)
 
                 if usesBasicAuth {
-                    TextField("用户名", text: $usernameInput)
+                    TextField(L10n.Onboarding.username, text: $usernameInput)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                         .textContentType(.username)
@@ -189,7 +189,7 @@ struct WelcomeView: View {
                             focusedField = .password
                         }
 
-                    SecureField("密码", text: $passwordInput)
+                    SecureField(L10n.Onboarding.password, text: $passwordInput)
                         .textContentType(.password)
                         .textFieldStyle(.roundedBorder)
                         .focused($focusedField, equals: .password)
@@ -230,7 +230,7 @@ struct WelcomeView: View {
         let trimmedURL = trimmedURL
         guard FavaURLValidator.isValid(trimmedURL) else {
             showValidationError = true
-            validationMessage = "请输入有效的链接（以 http 或 https 开头）"
+            validationMessage = L10n.string(L10n.Errors.onboardingInvalidURLPrefix)
             focusedField = .url
             return
         }
@@ -239,13 +239,13 @@ struct WelcomeView: View {
         if usesBasicAuth {
             guard !sanitizedUsername.isEmpty else {
                 showValidationError = true
-                validationMessage = "请输入用户名"
+                validationMessage = L10n.string(L10n.Errors.onboardingMissingUsername)
                 focusedField = .username
                 return
             }
             guard !passwordInput.isEmpty else {
                 showValidationError = true
-                validationMessage = "请输入密码"
+                validationMessage = L10n.string(L10n.Errors.onboardingMissingPassword)
                 focusedField = .password
                 return
             }
@@ -266,7 +266,8 @@ struct WelcomeView: View {
             )
         } catch {
             showValidationError = true
-            validationMessage = (error as? LocalizedError)?.errorDescription ?? "无法解析 Fava 地址"
+            validationMessage = (error as? LocalizedError)?.errorDescription
+                ?? L10n.string(L10n.Errors.onboardingUnableResolveFavaURL)
             focusedField = .url
             return
         }
@@ -276,7 +277,7 @@ struct WelcomeView: View {
                 try KeychainService.saveString(passwordInput, for: KeychainKeys.favaApiPassword)
             } catch {
                 showValidationError = true
-                validationMessage = "无法保存密码，请重试"
+                validationMessage = L10n.string(L10n.Errors.onboardingUnableSavePassword)
                 focusedField = .password
                 return
             }

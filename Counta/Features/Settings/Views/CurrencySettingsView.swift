@@ -6,20 +6,20 @@ struct CurrencySettingsView: View {
     var body: some View {
         Form {
             Section {
-                Picker("货币显示", selection: $currencyDisplayMode) {
+                Picker(L10n.Settings.currencyDisplay, selection: $currencyDisplayMode) {
                     ForEach(CurrencyDisplayMode.allCases) { mode in
-                        Text("\(mode.title) (\(mode.example))")
+                        Text(mode.displayTitle)
                             .tag(mode)
                     }
                 }
                 .pickerStyle(.segmented)
             } header: {
-                Text("显示")
+                Text(L10n.CurrencySettings.sectionDisplay)
             } footer: {
-                Text("当货币没有常见符号时，将使用通用货币符号 ¤。")
+                Text(L10n.CurrencySettings.footerUncommonCurrencySymbolNote)
             }
         }
-        .navigationTitle("货币设置")
+        .navigationTitle(L10n.CurrencySettings.title)
         .navigationBarTitleDisplayMode(.inline)
     }
 }

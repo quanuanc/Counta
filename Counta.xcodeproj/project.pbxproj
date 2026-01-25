@@ -99,6 +99,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				"zh-Hans",
 				Base,
 			);
 			mainGroup = 0604FFF32F1CF0AB0054B502;

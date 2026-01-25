@@ -36,7 +36,8 @@ final class JournalViewModel: @unchecked Sendable {
             apply(data, appending: false)
             hasLoaded = true
         } catch {
-            errorMessage = (error as? LocalizedError)?.errorDescription ?? "无法加载日记账数据"
+            errorMessage = (error as? LocalizedError)?.errorDescription
+                ?? String(localized: L10n.Errors.vmLoadJournal)
         }
     }
 
@@ -52,7 +53,8 @@ final class JournalViewModel: @unchecked Sendable {
             let data = try await service.fetchJournal(baseURL: baseURL, page: nextPage, order: order)
             apply(data, appending: true)
         } catch {
-            errorMessage = (error as? LocalizedError)?.errorDescription ?? "无法加载更多日记账数据"
+            errorMessage = (error as? LocalizedError)?.errorDescription
+                ?? String(localized: L10n.Errors.vmLoadJournalMore)
         }
     }
 

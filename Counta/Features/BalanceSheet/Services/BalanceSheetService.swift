@@ -71,20 +71,20 @@ enum BalanceSheetServiceError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .missingBaseURL:
-            return "请先在设置中配置 Fava 地址"
+            return String(localized: L10n.Errors.missingBaseURL)
         case .invalidBaseURL:
-            return "Fava 地址无效，请检查设置"
+            return String(localized: L10n.Errors.invalidBaseURL)
         case .invalidResponse:
-            return "服务器响应无效，请稍后重试"
+            return String(localized: L10n.Errors.invalidResponse)
         case .httpStatus(let statusCode):
             if statusCode == 401 || statusCode == 403 {
-                return "认证失败，请检查用户名和密码"
+                return String(localized: L10n.Errors.authFailed)
             }
-            return "服务器返回错误（\(statusCode)）"
+            return L10n.Errors.httpStatus(statusCode)
         case .decodingFailed:
-            return "无法解析资产负债表数据"
+            return String(localized: L10n.Errors.decodingBalanceSheet)
         case .requestFailed(let error):
-            return "网络请求失败：\(error.localizedDescription)"
+            return L10n.Errors.requestFailed(error)
         }
     }
 }

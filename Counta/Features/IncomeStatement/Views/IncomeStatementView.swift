@@ -21,7 +21,7 @@ struct IncomeStatementView: View {
                     expensesSection
                 }
             }
-            .navigationTitle("损益表")
+            .navigationTitle(L10n.Titles.incomeStatement)
             .refreshable {
                 await viewModel.refresh()
             }
@@ -60,9 +60,9 @@ struct IncomeStatementView: View {
     private var emptySection: some View {
         Section {
             ContentUnavailableView(
-                "暂无损益表数据",
+                L10n.IncomeStatement.emptyTitle,
                 systemImage: "chart.bar.doc.horizontal",
-                description: Text("请检查 Fava 连接设置")
+                description: Text(L10n.Common.checkFavaSettings)
             )
         }
     }
@@ -71,7 +71,7 @@ struct IncomeStatementView: View {
         Section {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    Text("净收入")
+                    Text(L10n.IncomeStatement.netIncome)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     Spacer()
@@ -84,7 +84,7 @@ struct IncomeStatementView: View {
 
                 HStack(spacing: 20) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("收入")
+                        Text(L10n.IncomeStatement.income)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         AmountListView(
@@ -98,7 +98,7 @@ struct IncomeStatementView: View {
                     Spacer()
 
                     VStack(alignment: .trailing, spacing: 4) {
-                        Text("支出")
+                        Text(L10n.IncomeStatement.expenses)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         AmountListView(
@@ -142,7 +142,7 @@ struct IncomeStatementView: View {
                 }
             } label: {
                 HStack {
-                    Text("Income")
+                    Text(L10n.AccountType.income)
                         .font(.body)
                     Spacer()
                     AmountListView(
@@ -153,7 +153,7 @@ struct IncomeStatementView: View {
                 }
             }
         } header: {
-            sectionHeader(title: "收入", accountType: .income)
+            sectionHeader(title: L10n.IncomeStatement.income, accountType: .income)
         }
     }
 
@@ -169,7 +169,7 @@ struct IncomeStatementView: View {
                 }
             } label: {
                 HStack {
-                    Text("Expenses")
+                    Text(L10n.AccountType.expenses)
                         .font(.body)
                     Spacer()
                     AmountListView(
@@ -180,11 +180,11 @@ struct IncomeStatementView: View {
                 }
             }
         } header: {
-            sectionHeader(title: "支出", accountType: .expenses)
+            sectionHeader(title: L10n.IncomeStatement.expenses, accountType: .expenses)
         }
     }
 
-    private func sectionHeader(title: String, accountType: AccountType) -> some View {
+    private func sectionHeader(title: LocalizedStringResource, accountType: AccountType) -> some View {
         HStack(spacing: 8) {
             AccountIcon(accountType: accountType, size: 18)
             Text(title)

@@ -9,12 +9,12 @@ struct MainTabView: View {
         case journal
         case settings
 
-        var title: String {
+        var title: LocalizedStringResource {
             switch self {
-            case .incomeStatement: return "损益表"
-            case .balanceSheet: return "资产负债"
-            case .journal: return "日记账"
-            case .settings: return "设置"
+            case .incomeStatement: return L10n.Tabs.incomeStatement
+            case .balanceSheet: return L10n.Tabs.balanceSheet
+            case .journal: return L10n.Tabs.journal
+            case .settings: return L10n.Tabs.settings
             }
         }
 

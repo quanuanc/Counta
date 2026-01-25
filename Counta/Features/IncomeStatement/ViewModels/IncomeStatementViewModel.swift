@@ -65,7 +65,8 @@ final class IncomeStatementViewModel: @unchecked Sendable {
             apply(data)
             hasLoaded = true
         } catch {
-            errorMessage = (error as? LocalizedError)?.errorDescription ?? "无法加载损益表数据"
+            errorMessage = (error as? LocalizedError)?.errorDescription
+                ?? String(localized: L10n.Errors.vmLoadIncomeStatement)
         }
     }
 

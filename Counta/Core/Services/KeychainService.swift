@@ -66,7 +66,7 @@ enum KeychainError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .unhandledStatus(let status):
-            return "Keychain error: \(status)"
+            return L10n.Errors.keychainUnhandledStatus(Int(status))
         }
     }
 }

@@ -16,6 +16,40 @@ enum JournalEntryStatus: String, Sendable {
     case other
 }
 
+extension JournalEntryKind {
+    var localizedTitle: LocalizedStringResource {
+        switch self {
+        case .transaction:
+            return L10n.Journal.kindTransaction
+        case .open:
+            return L10n.Journal.kindOpen
+        case .balance:
+            return L10n.Journal.kindBalance
+        case .price:
+            return L10n.Journal.kindPrice
+        case .note:
+            return L10n.Journal.kindNote
+        case .pad:
+            return L10n.Journal.kindPad
+        case .other:
+            return L10n.Journal.kindOther
+        }
+    }
+}
+
+extension JournalEntryStatus {
+    var localizedTitle: LocalizedStringResource {
+        switch self {
+        case .cleared:
+            return L10n.Journal.statusCleared
+        case .pending:
+            return L10n.Journal.statusPending
+        case .other:
+            return L10n.Journal.statusOther
+        }
+    }
+}
+
 struct JournalEntry: Identifiable, Hashable, Sendable {
     let id: UUID
     let date: Date

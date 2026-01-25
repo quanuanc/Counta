@@ -22,7 +22,7 @@ struct BalanceSheetView: View {
                     equitySection
                 }
             }
-            .navigationTitle("资产负债表")
+            .navigationTitle(L10n.Titles.balanceSheet)
             .refreshable {
                 await viewModel.refresh()
             }
@@ -63,9 +63,9 @@ struct BalanceSheetView: View {
     private var emptySection: some View {
         Section {
             ContentUnavailableView(
-                "暂无资产负债表数据",
+                L10n.BalanceSheet.emptyTitle,
                 systemImage: "chart.bar.doc.horizontal",
-                description: Text("请检查 Fava 连接设置")
+                description: Text(L10n.Common.checkFavaSettings)
             )
         }
     }
@@ -74,7 +74,7 @@ struct BalanceSheetView: View {
         Section {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    Text("净资产")
+                    Text(L10n.BalanceSheet.netWorth)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     Spacer()
@@ -87,7 +87,7 @@ struct BalanceSheetView: View {
 
                 HStack(spacing: 20) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("资产")
+                        Text(L10n.BalanceSheet.assets)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         AmountListView(
@@ -101,7 +101,7 @@ struct BalanceSheetView: View {
                     Spacer()
 
                     VStack(alignment: .trailing, spacing: 4) {
-                        Text("负债")
+                        Text(L10n.BalanceSheet.liabilities)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         AmountListView(
@@ -129,7 +129,7 @@ struct BalanceSheetView: View {
                 }
             } label: {
                 HStack {
-                    Text("Assets")
+                    Text(L10n.AccountType.assets)
                         .font(.body)
                     Spacer()
                     AmountListView(
@@ -140,7 +140,7 @@ struct BalanceSheetView: View {
                 }
             }
         } header: {
-            sectionHeader(title: "资产", accountType: .assets)
+            sectionHeader(title: L10n.BalanceSheet.assets, accountType: .assets)
         }
     }
 
@@ -156,7 +156,7 @@ struct BalanceSheetView: View {
                 }
             } label: {
                 HStack {
-                    Text("Liabilities")
+                    Text(L10n.AccountType.liabilities)
                         .font(.body)
                     Spacer()
                     AmountListView(
@@ -167,7 +167,7 @@ struct BalanceSheetView: View {
                 }
             }
         } header: {
-            sectionHeader(title: "负债", accountType: .liabilities)
+            sectionHeader(title: L10n.BalanceSheet.liabilities, accountType: .liabilities)
         }
     }
 
@@ -183,7 +183,7 @@ struct BalanceSheetView: View {
                 }
             } label: {
                 HStack {
-                    Text("Equity")
+                    Text(L10n.AccountType.equity)
                         .font(.body)
                     Spacer()
                     AmountListView(
@@ -194,11 +194,11 @@ struct BalanceSheetView: View {
                 }
             }
         } header: {
-            sectionHeader(title: "权益", accountType: .equity)
+            sectionHeader(title: L10n.BalanceSheet.equity, accountType: .equity)
         }
     }
 
-    private func sectionHeader(title: String, accountType: AccountType) -> some View {
+    private func sectionHeader(title: LocalizedStringResource, accountType: AccountType) -> some View {
         HStack(spacing: 8) {
             AccountIcon(accountType: accountType, size: 18)
             Text(title)
