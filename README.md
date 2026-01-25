@@ -13,7 +13,7 @@ Counta 是一个用于在 iPhone 上查看 Beancount 账本的 SwiftUI App。它
 
 ## 截图
 
-![App Root View](docs/img/RootView.png)
+<img src="docs/img/RootView.png" width="320" alt="App Root View" />
 
 ## 使用前准备：运行 Fava
 
