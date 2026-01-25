@@ -91,9 +91,9 @@ enum AccountDetailServiceError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .missingBaseURL:
-            return "请先在设置中配置 Fava API 地址"
+            return "请先在设置中配置 Fava 地址"
         case .invalidBaseURL:
-            return "Fava API 地址无效，请检查设置"
+            return "Fava 地址无效，请检查设置"
         case .invalidResponse:
             return "服务器响应无效，请稍后重试"
         case .httpStatus(let statusCode):

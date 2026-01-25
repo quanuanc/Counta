@@ -17,9 +17,9 @@ struct WelcomeView: View {
         var subtitle: String {
             switch self {
             case .onboarding:
-                return "请输入 Fava 的 API 地址以连接账本数据"
+                return "请输入 Fava 地址以连接账本数据"
             case .settings:
-                return "更新 Fava 的 API 地址和登录信息"
+                return "更新 Fava 地址和登录信息"
             }
         }
 
@@ -53,16 +53,18 @@ struct WelcomeView: View {
 
     let context: Context
     @Environment(\.dismiss) private var dismiss
+    @AppStorage(AppStorageKeys.favaBaseURL) private var storedFavaBaseURL = ""
     @AppStorage(AppStorageKeys.favaApiURL) private var storedFavaApiURL = ""
     @AppStorage(AppStorageKeys.favaApiUsername) private var storedFavaApiUsername = ""
     @AppStorage(AppStorageKeys.favaUsesBasicAuth) private var storedUsesBasicAuth = false
 
-    @State private var favaApiURLInput = ""
+    @State private var favaBaseURLInput = ""
     @State private var usesBasicAuth = false
     @State private var usernameInput = ""
     @State private var passwordInput = ""
     @State private var showValidationError = false
     @State private var validationMessage = ""
+    @State private var isResolvingURL = false
     @FocusState private var focusedField: Field?
 
     private enum Field {
@@ -72,7 +74,7 @@ struct WelcomeView: View {
     }
 
     private var trimmedURL: String {
-        FavaURLValidator.normalized(favaApiURLInput)
+        FavaURLValidator.normalized(favaBaseURLInput)
     }
 
     private var trimmedUsername: String {
@@ -92,6 +94,7 @@ struct WelcomeView: View {
             VStack(alignment: .leading, spacing: 24) {
                 headerSection
                 inputSection
+                    .disabled(isResolvingURL)
             }
             .padding(.horizontal, 24)
             .padding(.top, 32)
@@ -106,19 +109,24 @@ struct WelcomeView: View {
                 }
 
                 Button(action: handleContinue) {
-                    Text(context.actionTitle)
+                    HStack(spacing: 8) {
+                        if isResolvingURL {
+                            ProgressView()
+                        }
+                        Text(isResolvingURL ? "连接中..." : context.actionTitle)
+                    }
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
-                .disabled(!canContinue)
+                .disabled(!canContinue || isResolvingURL)
             }
             .padding(24)
             .background(.background)
             .overlay(Divider(), alignment: .top)
         }
         .onAppear(perform: loadStoredValues)
-        .onChange(of: favaApiURLInput) { clearValidation() }
+        .onChange(of: favaBaseURLInput) { clearValidation() }
         .onChange(of: usesBasicAuth) { clearValidation() }
         .onChange(of: usernameInput) { clearValidation() }
         .onChange(of: passwordInput) { clearValidation() }
@@ -146,10 +154,10 @@ struct WelcomeView: View {
     private var inputSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Fava API 地址")
+                Text("Fava 地址")
                     .font(.headline)
 
-                TextField("https://fava.0x8.site/个人账本/api", text: $favaApiURLInput)
+                TextField("https://fava.pythonanywhere.com", text: $favaBaseURLInput)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                     .keyboardType(.URL)
@@ -193,7 +201,11 @@ struct WelcomeView: View {
     }
 
     private func loadStoredValues() {
-        favaApiURLInput = storedFavaApiURL
+        if storedFavaBaseURL.isEmpty {
+            favaBaseURLInput = FavaURLResolver.baseURL(from: storedFavaApiURL)
+        } else {
+            favaBaseURLInput = storedFavaBaseURL
+        }
         usesBasicAuth = storedUsesBasicAuth
         usernameInput = storedFavaApiUsername
         passwordInput = storedUsesBasicAuth
@@ -207,6 +219,14 @@ struct WelcomeView: View {
     }
 
     private func handleContinue() {
+        guard !isResolvingURL else { return }
+        Task {
+            await handleContinueAsync()
+        }
+    }
+
+    @MainActor
+    private func handleContinueAsync() async {
         let trimmedURL = trimmedURL
         guard FavaURLValidator.isValid(trimmedURL) else {
             showValidationError = true
@@ -215,9 +235,9 @@ struct WelcomeView: View {
             return
         }
 
+        let sanitizedUsername = trimmedUsername
         if usesBasicAuth {
-            let trimmedUsername = trimmedUsername
-            guard !trimmedUsername.isEmpty else {
+            guard !sanitizedUsername.isEmpty else {
                 showValidationError = true
                 validationMessage = "请输入用户名"
                 focusedField = .username
@@ -229,7 +249,29 @@ struct WelcomeView: View {
                 focusedField = .password
                 return
             }
+        }
 
+        clearValidation()
+        isResolvingURL = true
+        defer { isResolvingURL = false }
+
+        let resolvedAPIURL: String
+        do {
+            let authHeader = usesBasicAuth
+                ? FavaAuthorization.basicHeader(username: sanitizedUsername, password: passwordInput)
+                : nil
+            resolvedAPIURL = try await FavaURLResolver.resolveAPIBase(
+                from: trimmedURL,
+                authorizationHeader: authHeader
+            )
+        } catch {
+            showValidationError = true
+            validationMessage = (error as? LocalizedError)?.errorDescription ?? "无法解析 Fava 地址"
+            focusedField = .url
+            return
+        }
+
+        if usesBasicAuth {
             do {
                 try KeychainService.saveString(passwordInput, for: KeychainKeys.favaApiPassword)
             } catch {
@@ -238,15 +280,15 @@ struct WelcomeView: View {
                 focusedField = .password
                 return
             }
-
-            storedFavaApiUsername = trimmedUsername
+            storedFavaApiUsername = sanitizedUsername
         } else {
             storedFavaApiUsername = ""
             try? KeychainService.deleteString(for: KeychainKeys.favaApiPassword)
         }
 
         storedUsesBasicAuth = usesBasicAuth
-        storedFavaApiURL = trimmedURL
+        storedFavaBaseURL = FavaURLResolver.baseURL(from: trimmedURL)
+        storedFavaApiURL = resolvedAPIURL
         clearValidation()
         focusedField = nil
 

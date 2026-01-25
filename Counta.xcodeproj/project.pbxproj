@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0604C55C2F264F480014DEC1 /* CountaIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 0604C55B2F264F480014DEC1 /* CountaIcon.icon */; };
 		060500002F2000010054B502 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 060500012F2000010054B502 /* SwiftSoup */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0604C55B2F264F480014DEC1 /* CountaIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = CountaIcon.icon; sourceTree = "<group>"; };
 		0604FFFC2F1CF0AB0054B502 /* Counta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Counta.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -39,6 +41,7 @@
 			children = (
 				0604FFFE2F1CF0AB0054B502 /* Counta */,
 				0604FFFD2F1CF0AB0054B502 /* Products */,
+				0604C55B2F264F480014DEC1 /* CountaIcon.icon */,
 			);
 			sourceTree = "<group>";
 		};
@@ -118,6 +121,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0604C55C2F264F480014DEC1 /* CountaIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,7 +262,7 @@
 		060400082F1CF0B00054B502 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = CountaIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -292,7 +296,7 @@
 		060400092F1CF0B00054B502 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = CountaIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

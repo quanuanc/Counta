@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @State private var viewModel = SettingsViewModel()
+    @AppStorage(AppStorageKeys.favaBaseURL) private var storedFavaBaseURL = ""
     @AppStorage(AppStorageKeys.favaApiURL) private var storedFavaApiURL = ""
     @AppStorage(AppStorageKeys.currencyDisplayMode) private var currencyDisplayMode: CurrencyDisplayMode = .symbol
 
@@ -27,7 +28,7 @@ struct SettingsView: View {
                         .frame(width: 28)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Fava 服务器")
-                        Text(storedFavaApiURL.isEmpty ? "未设置" : storedFavaApiURL)
+                        Text(displayFavaURL.isEmpty ? "未设置" : displayFavaURL)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
@@ -35,6 +36,14 @@ struct SettingsView: View {
                 }
             }
         }
+    }
+
+    private var displayFavaURL: String {
+        if !storedFavaBaseURL.isEmpty {
+            return storedFavaBaseURL
+        }
+        let derived = FavaURLResolver.baseURL(from: storedFavaApiURL)
+        return derived.isEmpty ? storedFavaApiURL : derived
     }
 
     private var displaySection: some View {

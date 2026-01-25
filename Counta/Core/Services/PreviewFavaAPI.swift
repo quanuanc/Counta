@@ -8,6 +8,7 @@ enum PreviewFavaAPI {
     static func enable() {
         guard !isEnabled else { return }
         isEnabled = true
+        UserDefaults.standard.set("https://preview.fava.local", forKey: AppStorageKeys.favaBaseURL)
         UserDefaults.standard.set(baseURL, forKey: AppStorageKeys.favaApiURL)
         URLProtocol.registerClass(PreviewFavaURLProtocol.self)
     }
