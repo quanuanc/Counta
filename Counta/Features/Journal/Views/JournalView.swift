@@ -73,20 +73,7 @@ struct JournalView: View {
     }
 
     private var entriesSection: some View {
-        ForEach(viewModel.groupedEntries) { group in
-            Section {
-                ForEach(group.entries) { entry in
-                    NavigationLink(value: entry) {
-                        JournalEntryRowView(entry: entry)
-                    }
-                }
-            } header: {
-                Text(sectionTitle(for: group.date))
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .textCase(nil)
-            }
-        }
+        JournalEntryGroupListView(groups: viewModel.groupedEntries)
     }
 
     private var loadMoreSection: some View {
@@ -117,20 +104,5 @@ struct JournalView: View {
 #Preview {
     PreviewContainer {
         JournalView()
-    }
-}
-
-private extension JournalView {
-    func sectionTitle(for date: Date) -> String {
-        if date.isToday {
-            return "今天"
-        }
-        if date.isYesterday {
-            return "昨天"
-        }
-        if Calendar.current.isDate(date, equalTo: Date(), toGranularity: .year) {
-            return date.formatted(.dateTime.month().day())
-        }
-        return date.formatted(.dateTime.year().month().day())
     }
 }

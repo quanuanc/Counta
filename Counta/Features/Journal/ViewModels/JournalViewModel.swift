@@ -1,12 +1,5 @@
 import Foundation
 
-struct JournalEntryGroup: Sendable, Identifiable {
-    let date: Date
-    var entries: [JournalEntry]
-
-    var id: Date { date }
-}
-
 @Observable
 final class JournalViewModel: @unchecked Sendable {
     var isLoading = false
@@ -84,7 +77,7 @@ final class JournalViewModel: @unchecked Sendable {
         let query = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else {
             entries = allEntries
-            groupedEntries = makeGroups(from: allEntries)
+            groupedEntries = JournalEntryGroup.makeGroups(from: allEntries)
             return
         }
 
@@ -94,23 +87,6 @@ final class JournalViewModel: @unchecked Sendable {
             return entry.narration.localizedLowercase.contains(lowercased)
                 || payee.contains(lowercased)
         }
-        groupedEntries = makeGroups(from: entries)
-    }
-
-    private func makeGroups(from entries: [JournalEntry]) -> [JournalEntryGroup] {
-        var groups: [JournalEntryGroup] = []
-        var indexByDate: [Date: Int] = [:]
-
-        for entry in entries {
-            let day = entry.date.startOfDay
-            if let index = indexByDate[day] {
-                groups[index].entries.append(entry)
-            } else {
-                indexByDate[day] = groups.count
-                groups.append(JournalEntryGroup(date: day, entries: [entry]))
-            }
-        }
-
-        return groups
+        groupedEntries = JournalEntryGroup.makeGroups(from: entries)
     }
 }

@@ -47,6 +47,19 @@ extension Date {
         return formatter.string(from: self)
     }
 
+    var journalSectionTitle: String {
+        if isToday {
+            return "今天"
+        }
+        if isYesterday {
+            return "昨天"
+        }
+        if Calendar.current.isDate(self, equalTo: Date(), toGranularity: .year) {
+            return formatted(.dateTime.month().day())
+        }
+        return formatted(.dateTime.year().month().day())
+    }
+
     var timeDescription: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"

@@ -2,27 +2,40 @@ import SwiftUI
 
 struct AccountDetailView: View {
     let account: Account
-    private let balanceAmounts: [Amount]
-    private let transactions: [Transaction]
+    @State private var viewModel: AccountDetailViewModel
 
     init(
         account: Account,
-        balanceAmounts: [Amount]? = nil,
-        transactions: [Transaction] = AccountDetailView.placeholderTransactions
+        balanceAmounts: [Amount]? = nil
     ) {
         self.account = account
-        self.balanceAmounts = balanceAmounts ?? Self.makeBalanceAmounts(for: account)
-        self.transactions = transactions
+        let initialBalances =
+            balanceAmounts ?? Self.makeBalanceAmounts(for: account)
+        _viewModel = State(
+            initialValue: AccountDetailViewModel(
+                account: account,
+                initialBalances: initialBalances
+            )
+        )
     }
 
     var body: some View {
         List {
+            if let errorMessage = viewModel.errorMessage {
+                errorSection(message: errorMessage)
+            }
             accountInfoSection
             balanceSection
             transactionsSection
         }
         .navigationTitle(account.name)
         .navigationBarTitleDisplayMode(.inline)
+        .refreshable {
+            await viewModel.refresh()
+        }
+        .task {
+            await viewModel.loadIfNeeded()
+        }
     }
 
     private var accountInfoSection: some View {
@@ -38,62 +51,75 @@ struct AccountDetailView: View {
 
     private var balanceSection: some View {
         Section("余额") {
-            HStack {
-                Text("当前余额")
-                Spacer()
-                BalanceAmountList(amounts: balanceAmounts)
-            }
-        }
-    }
-
-    private var transactionsSection: some View {
-        Section("相关交易") {
-            if transactions.isEmpty {
-                Text("暂无相关交易")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+            if viewModel.isLoading && viewModel.balanceAmounts.isEmpty {
+                loadingRow
             } else {
-                ForEach(transactions) { transaction in
-                    AccountRelatedTransactionRow(transaction: transaction)
+                HStack {
+                    Text("当前余额")
+                    Spacer()
+                    BalanceAmountList(amounts: viewModel.balanceAmounts)
                 }
             }
         }
     }
 
-    private static func makeBalanceAmounts(for account: Account) -> [Amount] {
-        let sign: Decimal = account.type == .expenses ? -1 : 1
-        let balances = account.totalBalancesByCurrency
-        if balances.isEmpty {
-            return [Amount(number: account.balance * sign, currency: account.currency)]
+    @ViewBuilder
+    private var transactionsSection: some View {
+        if viewModel.isLoading && viewModel.relatedEntries.isEmpty {
+            Section("相关交易") {
+                loadingRow
+            }
+        } else if viewModel.relatedEntries.isEmpty {
+            Section("相关交易") {
+                Text("暂无相关交易")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        } else {
+            JournalEntryGroupListView(groups: viewModel.relatedEntryGroups) {
+                entry in
+                JournalEntryDetailView(entry: entry)
+            }
         }
-        return balances
-            .map { Amount(number: $0.value * sign, currency: $0.key) }
-            .sorted { $0.currency < $1.currency }
     }
 
-    private static let placeholderTransactions: [Transaction] = [
-        Transaction(
-            date: makeDate(2024, 1, 31),
-            payee: "公司",
-            narration: "工资",
-            postings: [
-                Posting(account: "Assets:Bank", amount: Amount(number: 20000)),
-                Posting(account: "Income:Salary", amount: Amount(number: -20000)),
-            ]
-        ),
-        Transaction(
-            date: makeDate(2024, 1, 15),
-            payee: "超市",
-            narration: "买菜",
-            postings: [
-                Posting(account: "Expenses:Food", amount: Amount(number: 50)),
-                Posting(account: "Assets:Cash", amount: Amount(number: -50)),
-            ]
-        ),
-    ]
+    private func errorSection(message: String) -> some View {
+        Section {
+            Text(message)
+                .font(.footnote)
+                .foregroundStyle(.red)
+        }
+    }
 
-    private static func makeDate(_ year: Int, _ month: Int, _ day: Int) -> Date {
-        Calendar.current.date(from: DateComponents(year: year, month: month, day: day)) ?? Date()
+    private var loadingRow: some View {
+        HStack {
+            Spacer()
+            ProgressView()
+            Spacer()
+        }
+    }
+
+    private static func makeBalanceAmounts(for account: Account) -> [Amount] {
+        let sign: Decimal
+        switch account.type {
+        case .expenses, .liabilities, .equity:
+            sign = -1
+        default:
+            sign = 1
+        }
+        let balances = account.totalBalancesByCurrency
+        if balances.isEmpty {
+            return [
+                Amount(
+                    number: account.balance * sign,
+                    currency: account.currency
+                )
+            ]
+        }
+        return
+            balances
+            .map { Amount(number: $0.value * sign, currency: $0.key) }
+            .sorted { $0.currency < $1.currency }
     }
 }
 
@@ -128,64 +154,8 @@ private struct AccountTypeBadge: View {
     }
 }
 
-private struct AccountRelatedTransactionRow: View {
-    let transaction: Transaction
-
-    private var indicatorColor: Color {
-        if transaction.isIncome {
-            return .green
-        } else if transaction.isExpense {
-            return .red
-        }
-        return .blue
-    }
-
-    private var titleText: String {
-        transaction.payee ?? transaction.narration
-    }
-
-    private var subtitleText: String {
-        if transaction.payee != nil {
-            return transaction.narration
-        }
-        return transaction.primaryAccount ?? ""
-    }
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Circle()
-                .fill(indicatorColor)
-                .frame(width: 8, height: 8)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(titleText)
-                    .font(.body)
-                    .lineLimit(1)
-
-                if !subtitleText.isEmpty {
-                    Text(subtitleText)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-
-                Text(transaction.date.relativeDescription)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
-                .font(.footnote)
-                .foregroundStyle(.tertiary)
-        }
-        .padding(.vertical, 4)
-    }
-}
-
-private extension AccountType {
-    var localizedTitle: String {
+extension AccountType {
+    fileprivate var localizedTitle: String {
         switch self {
         case .assets:
             return "资产"
@@ -200,7 +170,7 @@ private extension AccountType {
         }
     }
 
-    var tintColor: Color {
+    fileprivate var tintColor: Color {
         switch self {
         case .assets:
             return .blue
@@ -219,12 +189,14 @@ private extension AccountType {
 #Preview {
     PreviewContainer {
         NavigationStack {
-            AccountDetailView(account: Account(
-                id: "Assets:Bank",
-                name: "Bank",
-                type: .assets,
-                balance: 9950
-            ))
+            AccountDetailView(
+                account: Account(
+                    id: "Assets:Bank",
+                    name: "Bank",
+                    type: .assets,
+                    balance: 9950
+                )
+            )
         }
     }
 }
