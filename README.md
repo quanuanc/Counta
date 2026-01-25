@@ -39,6 +39,7 @@ fava /path/to/your.ledger.beancount --host 0.0.0.0 --port 5000
 4. 点击「开始使用 / 保存」
 
 说明：
+
 - 你既可以填 Fava 首页地址，也可以直接填 API 地址；Counta 会自动解析并定位到 `/api`。
 - Basic Auth 密码会保存到 iOS Keychain（设备解锁后可用，且仅限本机）。
 
@@ -109,6 +110,7 @@ Debug 环境下，SwiftUI Preview 会自动启用本地 Mock：
 - 从 `docs/**/response.json` 读取数据并返回
 
 相关实现：
+
 - `Counta/Core/Services/PreviewContainer.swift`
 - `Counta/Core/Services/PreviewFavaAPI.swift`
 
@@ -125,7 +127,3 @@ Debug 环境下，SwiftUI Preview 会自动启用本地 Mock：
 
 - Beancount：<https://beancount.github.io>
 - Fava：<https://beancount.github.io/fava/>
-
-## License
-
-本仓库当前未包含 `LICENSE` 文件；在补充许可证之前，默认保留所有权利。若你需要在开源/商用场景使用，请先与作者确认。
