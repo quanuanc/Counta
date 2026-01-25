@@ -133,12 +133,11 @@ struct IncomeStatementView: View {
     private var incomeSection: some View {
         Section {
             DisclosureGroup(isExpanded: $viewModel.incomeExpanded) {
-                ForEach(viewModel.incomeRows) { row in
-                    AccountRowView(
-                        account: row.account,
-                        amounts: row.displayAmounts,
-                        showCurrencyCode: showCurrencyCode,
-                        indentLevel: row.indentLevel
+                ForEach(viewModel.incomeAccounts) { account in
+                    IncomeStatementAccountTreeRow(
+                        account: account,
+                        viewModel: viewModel,
+                        showCurrencyCode: showCurrencyCode
                     )
                 }
             } label: {
@@ -160,12 +159,11 @@ struct IncomeStatementView: View {
     private var expensesSection: some View {
         Section {
             DisclosureGroup(isExpanded: $viewModel.expensesExpanded) {
-                ForEach(viewModel.expenseRows) { row in
-                    AccountRowView(
-                        account: row.account,
-                        amounts: row.displayAmounts,
-                        showCurrencyCode: showCurrencyCode,
-                        indentLevel: row.indentLevel
+                ForEach(viewModel.expenseAccounts) { account in
+                    IncomeStatementAccountTreeRow(
+                        account: account,
+                        viewModel: viewModel,
+                        showCurrencyCode: showCurrencyCode
                     )
                 }
             } label: {

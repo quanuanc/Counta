@@ -8,10 +8,12 @@ final class IncomeStatementViewModel: @unchecked Sendable {
     var expensesExpanded = true
     var isLoading = false
     var errorMessage: String?
+    private(set) var expandedAccountIds: Set<String> = []
 
     private(set) var incomeAccounts: [Account] = []
     private(set) var expenseAccounts: [Account] = []
     private var hasLoaded = false
+    private var hasInitializedAccountExpansion = false
 
     private let service = IncomeStatementService()
 
@@ -42,14 +44,6 @@ final class IncomeStatementViewModel: @unchecked Sendable {
     var summaryCurrencies: [String] {
         let currencies = Set(totalIncomeByCurrency.keys).union(totalExpensesByCurrency.keys)
         return sortedCurrencies(currencies)
-    }
-
-    var incomeRows: [IncomeStatementAccountRow] {
-        flattenAccounts(incomeAccounts)
-    }
-
-    var expenseRows: [IncomeStatementAccountRow] {
-        flattenAccounts(expenseAccounts)
     }
 
     init() {}
@@ -94,6 +88,8 @@ final class IncomeStatementViewModel: @unchecked Sendable {
            let beginDate = Self.dateFormatter.date(from: range.begin) {
             selectedPeriod = beginDate
         }
+
+        updateAccountExpansion()
     }
 
     private func makeAccount(
@@ -218,25 +214,43 @@ final class IncomeStatementViewModel: @unchecked Sendable {
         }
     }
 
-    private func flattenAccounts(
-        _ accounts: [Account],
-        indentLevel: Int = 0
-    ) -> [IncomeStatementAccountRow] {
-        var rows: [IncomeStatementAccountRow] = []
-        for account in accounts {
-            rows.append(IncomeStatementAccountRow(
-                account: account,
-                indentLevel: indentLevel,
-                displayAmounts: displayAmounts(for: account)
-            ))
-            if account.hasChildren {
-                rows.append(contentsOf: flattenAccounts(account.children, indentLevel: indentLevel + 1))
-            }
-        }
-        return rows
+    func isAccountExpanded(_ accountId: String) -> Bool {
+        expandedAccountIds.contains(accountId)
     }
 
-    private func displayAmounts(for account: Account) -> [Amount] {
+    func setAccountExpanded(_ accountId: String, isExpanded: Bool) {
+        if isExpanded {
+            expandedAccountIds.insert(accountId)
+        } else {
+            expandedAccountIds.remove(accountId)
+        }
+    }
+
+    private func updateAccountExpansion() {
+        let expandableIds = collectExpandableAccountIds(from: incomeAccounts)
+            .union(collectExpandableAccountIds(from: expenseAccounts))
+        if !hasInitializedAccountExpansion {
+            if !expandableIds.isEmpty {
+                expandedAccountIds = expandableIds
+                hasInitializedAccountExpansion = true
+            }
+        } else {
+            expandedAccountIds = expandedAccountIds.intersection(expandableIds)
+        }
+    }
+
+    private func collectExpandableAccountIds(from accounts: [Account]) -> Set<String> {
+        var ids: Set<String> = []
+        for account in accounts {
+            if account.hasChildren {
+                ids.insert(account.id)
+                ids.formUnion(collectExpandableAccountIds(from: account.children))
+            }
+        }
+        return ids
+    }
+
+    func displayAmounts(for account: Account) -> [Amount] {
         let sign: Decimal = account.type == .expenses ? -1 : 1
         return amounts(from: account.totalBalancesByCurrency, sign: sign)
     }
@@ -248,16 +262,6 @@ final class IncomeStatementViewModel: @unchecked Sendable {
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter
     }()
-}
-
-struct IncomeStatementAccountRow: Identifiable, Sendable {
-    let account: Account
-    let indentLevel: Int
-    let displayAmounts: [Amount]
-
-    var id: String {
-        account.id
-    }
 }
 
 private struct BalanceSelection {

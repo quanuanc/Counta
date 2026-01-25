@@ -4,7 +4,6 @@ struct AccountRowView: View {
     let account: Account
     let amounts: [Amount]
     var showCurrencyCode: Bool = false
-    var indentLevel: Int = 0
 
     @AppStorage(AppStorageKeys.currencyDisplayMode) private var currencyDisplayMode: CurrencyDisplayMode = .symbol
 
@@ -15,7 +14,6 @@ struct AccountRowView: View {
     var body: some View {
         HStack {
             Text(account.name)
-                .padding(.leading, CGFloat(indentLevel) * 16)
             Spacer()
             AmountListView(
                 amounts: amounts,
@@ -23,6 +21,45 @@ struct AccountRowView: View {
                 showCurrencyCode: shouldShowCurrencyCode
             )
         }
+    }
+}
+
+struct IncomeStatementAccountTreeRow: View {
+    let account: Account
+    let viewModel: IncomeStatementViewModel
+    let showCurrencyCode: Bool
+
+    var body: some View {
+        if account.hasChildren {
+            DisclosureGroup(isExpanded: expansionBinding) {
+                ForEach(account.children) { child in
+                    IncomeStatementAccountTreeRow(
+                        account: child,
+                        viewModel: viewModel,
+                        showCurrencyCode: showCurrencyCode
+                    )
+                }
+            } label: {
+                AccountRowView(
+                    account: account,
+                    amounts: viewModel.displayAmounts(for: account),
+                    showCurrencyCode: showCurrencyCode
+                )
+            }
+        } else {
+            AccountRowView(
+                account: account,
+                amounts: viewModel.displayAmounts(for: account),
+                showCurrencyCode: showCurrencyCode
+            )
+        }
+    }
+
+    private var expansionBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.isAccountExpanded(account.id) },
+            set: { viewModel.setAccountExpanded(account.id, isExpanded: $0) }
+        )
     }
 }
 
