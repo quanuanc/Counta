@@ -48,31 +48,25 @@ struct SettingsView: View {
 
     private var displaySection: some View {
         Section("显示") {
-            NavigationLink {
-                CurrencySettingsView()
+            Picker(selection: $currencyDisplayMode) {
+                ForEach(CurrencyDisplayMode.allCases) { mode in
+                    Text("\(mode.title) (\(mode.example))")
+                        .tag(mode)
+                }
             } label: {
                 HStack {
                     Image(systemName: "dollarsign.circle")
                         .foregroundStyle(.green)
                         .frame(width: 28)
-                    Text("货币显示")
-                    Spacer()
-                    Text(currencyDisplayMode.title)
-                        .foregroundStyle(.secondary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("货币显示")
+                        Text("非常见货币将使用符号¤")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
-
-            Stepper(value: $viewModel.accountDepth, in: 1...5) {
-                HStack {
-                    Image(systemName: "list.bullet.indent")
-                        .foregroundStyle(.orange)
-                        .frame(width: 28)
-                    Text("账户层级显示")
-                    Spacer()
-                    Text("\(viewModel.accountDepth)")
-                        .foregroundStyle(.secondary)
-                }
-            }
+            .pickerStyle(.menu)
         }
     }
 
