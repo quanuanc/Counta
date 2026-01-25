@@ -118,10 +118,10 @@ struct WelcomeView: View {
             .overlay(Divider(), alignment: .top)
         }
         .onAppear(perform: loadStoredValues)
-        .onChange(of: favaApiURLInput) { _ in clearValidation() }
-        .onChange(of: usesBasicAuth) { _ in clearValidation() }
-        .onChange(of: usernameInput) { _ in clearValidation() }
-        .onChange(of: passwordInput) { _ in clearValidation() }
+        .onChange(of: favaApiURLInput) { clearValidation() }
+        .onChange(of: usesBasicAuth) { clearValidation() }
+        .onChange(of: usernameInput) { clearValidation() }
+        .onChange(of: passwordInput) { clearValidation() }
         .navigationTitle(context.navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
     }

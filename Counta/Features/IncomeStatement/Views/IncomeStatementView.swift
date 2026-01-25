@@ -201,19 +201,29 @@ private struct SummaryBarRow: View {
             }
 
             GeometryReader { geometry in
-                HStack(spacing: 4) {
-                    let total = income + expenses
-                    let incomeWidth = total > 0
-                        ? geometry.size.width * CGFloat(truncating: (income / total) as NSDecimalNumber)
-                        : geometry.size.width * 0.5
+                let incomeValue = max(income, 0)
+                let expenseValue = max(expenses, 0)
+                let total = incomeValue + expenseValue
+                let hasIncome = incomeValue > 0
+                let hasExpense = expenseValue > 0
+                let barSpacing: CGFloat = (hasIncome && hasExpense) ? 4 : 0
+                let availableWidth = max(geometry.size.width - barSpacing, 0)
+                let incomeRatio = total > 0 ? (incomeValue / total) : 0
+                let incomeWidth = availableWidth * CGFloat(truncating: incomeRatio as NSDecimalNumber)
+                let expenseWidth = availableWidth - incomeWidth
 
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(.green)
-                        .frame(width: max(incomeWidth, 4))
+                HStack(spacing: barSpacing) {
+                    if hasIncome {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(.green)
+                            .frame(width: incomeWidth)
+                    }
 
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(.red)
-                        .frame(width: max(geometry.size.width - incomeWidth - 4, 4))
+                    if hasExpense {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(.red)
+                            .frame(width: expenseWidth)
+                    }
                 }
             }
             .frame(height: 8)
