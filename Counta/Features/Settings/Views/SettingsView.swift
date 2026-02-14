@@ -137,8 +137,15 @@ struct AboutView: View {
     }
 }
 
-#Preview {
+#Preview("En") {
     PreviewContainer {
         SettingsView()
+            .environment(\.locale, .init(identifier: "en"))
+    }
+}
+#Preview("Zh") {
+    PreviewContainer {
+        SettingsView()
+            .environment(\.locale, .init(identifier: "zh"))
     }
 }

@@ -23,13 +23,4 @@ enum CurrencyDisplayMode: String, CaseIterable, Identifiable, Sendable {
             return L10n.CurrencyDisplayMode.codeItem
         }
     }
-
-    var example: String {
-        switch self {
-        case .symbol:
-            return "$"
-        case .code:
-            return "USD"
-        }
-    }
 }
